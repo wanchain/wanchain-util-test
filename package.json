@@ -1,0 +1,13 @@
+{
+  "name": "wanchain-util-test",
+  "version": "0.1.0",
+  "description": "wanchain util package test",
+  "dependencies": {
+    "wanchain-util":"^0.1.0"
+  },
+  "keywords": [
+    "wanchain"
+  ],
+  "author": "wanchain",
+  "license": "MIT"
+}
