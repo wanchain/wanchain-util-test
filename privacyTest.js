@@ -8,7 +8,7 @@ var Web3 = require('web3');
 var events = require('events');
 
 var Tx = require('wanchain-util').ethereumTx;
-var ethUtil = require('wanchain-util').ethereumutil;
+var ethUtil = require('wanchain-util').ethereumUtil;
 var solc = require('solc');
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
@@ -163,17 +163,6 @@ async function main(){
     let newBalance = contractInstance.balanceOf(otaDestAddress);
     console.log("New balance of "+otaDestAddress+":"+newBalance);
     console.log("New balance of "+otaAddress+" :"+contractInstance.balanceOf(otaAddress));
-    console.log(contractInstance.grecovered.call());
-    console.log(contractInstance.glastHash.call());
-    console.log(contractInstance.gsigv.call());
-    console.log(contractInstance.gsigr.call());
-    console.log(contractInstance.gsigs.call());
-
-    console.log("----------");
-    console.log(contractInstance.gtfrom.call());
-    console.log(contractInstance.gtto.call());
-    console.log(contractInstance.gkeyBytes.call());
-    console.log(contractInstance.gsv.call());
 
 
 //check the balance of otaDestAddress

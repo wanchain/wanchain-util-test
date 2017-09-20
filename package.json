@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "wanchain util package test",
   "dependencies": {
-    "wanchain-util":"^0.1.0"
+    "keccakjs": "^0.2.1",
+    "solc": "^0.4.16",
+    "wanchain-util": "^0.1.0",
+    "web3": "^0.20.2"
   },
   "keywords": [
     "wanchain"
