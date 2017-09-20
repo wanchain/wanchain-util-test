@@ -6,7 +6,7 @@ var events = require('events');
 var fs = require("fs");
 
 var Tx = require('wanchain-util').ethereumTx;
-var ethUtil = require('wanchain-util').ethereumutil;
+var ethUtil = require('wanchain-util').ethereumUtil;
 //ethUtil.crypto = require('crypto');
 
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
