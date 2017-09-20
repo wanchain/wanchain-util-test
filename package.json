@@ -5,7 +5,7 @@
   "dependencies": {
     "keccakjs": "^0.2.1",
     "solc": "^0.4.16",
-    "wanchain-util": "^0.1.0",
+    "wanchain-util": "^0.2.0",
     "web3": "^0.20.2"
   },
   "keywords": [
