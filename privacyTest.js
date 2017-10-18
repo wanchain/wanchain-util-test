@@ -5,7 +5,7 @@
 var fs = require('fs');
 var path = require('path');
 var Web3 = require('web3');
-// var events = require('events');
+var events = require('events');
 
 const Tx = require('wanchain-util').ethereumTx;
 const ethUtil = require('wanchain-util').ethereumUtil;
