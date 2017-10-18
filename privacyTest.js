@@ -7,28 +7,33 @@ var path = require('path');
 var Web3 = require('web3');
 var events = require('events');
 
-var Tx = require('wanchain-util').ethereumTx;
-var ethUtil = require('wanchain-util').ethereumUtil;
-var solc = require('solc');
+const Tx = require('wanchain-util').ethereumTx;
+const ethUtil = require('wanchain-util').ethereumUtil;
+const solc = require('solc');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+const config = require('./config');
 
-var srcDir = typeof(__dirname) == 'undefined' ? '' : __dirname;
-var content = fs.readFileSync(path.join(srcDir, "PrivacyTokenBase.sol"), 'utf8');
+const web3 = new Web3(new Web3.providers.HttpProvider(config.host + ':' + config.port));
 
-var compiled = solc.compile(content, 1);
-var privacyContract = web3.eth.contract(JSON.parse(compiled.contracts[':PrivacyTokenBase'].interface));
+const srcDir = typeof(__dirname) === 'undefined' ? '' : __dirname;
+const content = fs.readFileSync(path.join(srcDir, "PrivacyTokenBase.sol"), 'utf8');
+
+const compiled = solc.compile(content, 1);
+const privacyContract = web3.eth.contract(JSON.parse(compiled.contracts[':PrivacyTokenBase'].interface));
+
 //next line can used in cli debug
 //var privacyContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"initialBase","type":"address"},{"name":"baseKeyBytes","type":"bytes"},{"name":"value","type":"uint256"}],"name":"initAsset","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"tfrom","type":"address"},{"name":"tto","type":"address"},{"name":"keyBytes","type":"bytes"},{"name":"_value","type":"uint256"},{"name":"sigv","type":"uint8"},{"name":"sigr","type":"bytes32"},{"name":"sigs","type":"bytes32"}],"name":"privacyTransfer","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"setAddress","type":"address"},{"name":"value","type":"uint256"}],"name":"directDeposit","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"tfrom","type":"address"},{"name":"tto","type":"address"},{"name":"keyBytes","type":"bytes"},{"name":"_value","type":"uint256"}],"name":"signBytes","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"tfrom","type":"address"},{"name":"tto","type":"address"},{"name":"keyBytes","type":"bytes"},{"name":"value","type":"uint256"},{"name":"sigv","type":"uint8"},{"name":"sigr","type":"bytes32"},{"name":"sigs","type":"bytes32"}],"name":"sigCheck","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"hash","type":"bytes32"},{"name":"sigv","type":"uint8"},{"name":"sigr","type":"bytes32"},{"name":"sigs","type":"bytes32"}],"name":"sigCheckByHash","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"v","type":"uint256"}],"name":"uintToBytes","outputs":[{"name":"ret","type":"bytes32"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"mInitialized","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"tfrom","type":"address"},{"name":"tto","type":"address"},{"name":"value","type":"uint256"}],"name":"tranferDirect","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"keyOf","outputs":[{"name":"","type":"bytes"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}]);
-var contractInstanceAddress = fs.readFileSync("PrivacyTokenBase.addr","utf8");
-var contractInstance = privacyContract.at(contractInstanceAddress);
 
-var config_privatekey = 'a4369e77024c2ade4994a9345af5c47598c7cfb36c65e8a4a3117519883d9014';
-var config_address = '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e'
+const contractInstanceAddress = fs.readFileSync("PrivacyTokenBase.addr","utf8");
+const contractInstance = privacyContract.at(contractInstanceAddress);
 
+const config_privatekey = config.privatekey;
+const config_address = config.pubkey;
+
+const getTransactionReceipt = require('./utils/getTransactionReceipt');
 
 //TODO: reset private key buffer immediately after use it
-async function wchainSendRawTransaction(sender, senderPrivateKey, payload, log){
+async function wchainSendRawTransaction(sender, senderPrivateKey, payload, log) {
 	var privateKey = new Buffer(senderPrivateKey, 'hex');//from.so_privatekey
 	var serial = '0x' + web3.eth.getTransactionCount(config_address).toString(16);
 	var rawTx = {
@@ -46,35 +51,12 @@ async function wchainSendRawTransaction(sender, senderPrivateKey, payload, log){
 	var serializedTx = tx.serialize();
 	let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
     console.log(log + 'tx hash:'+hash);
-    let receipt = await getTransactionReceipt(hash);
+    let receipt = await getTransactionReceipt(web3, hash);
     console.log(receipt);
 }
 
-function getTransactionReceipt(txHash)
-{
-    return new Promise(function(success,fail){
-        let filter = web3.eth.filter('latest');
-        let blockAfter = 0;
-        filter.watch(function(err,blockhash){
-            if(err ){
-                console.log("err:"+err);
-            }else{
-                let receipt = web3.eth.getTransactionReceipt(txHash);
-                blockAfter += 1;
-                if(receipt){
-                    filter.stopWatching();
-                    success(receipt);
-                    return receipt;
-                }else if(blockAfter > 6){
-                    fail("Get receipt timeout");
-				}
-            }
-        });
-    });
-}
 
-
-async function wchainSendOTARawTransaction(sender, senderPrivateKey, payload, log){
+async function wchainSendOTARawTransaction(sender, senderPrivateKey, payload, log) {
 	var privateKey = new Buffer(senderPrivateKey, 'hex');//from.so_privatekey
 	var serial = '0x' + web3.eth.getTransactionCount(config_address).toString(16);
 	var rawTx = {
@@ -95,7 +77,7 @@ async function wchainSendOTARawTransaction(sender, senderPrivateKey, payload, lo
 	let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
 	console.log("serializeTx" + serializedTx.toString('hex'));
     console.log(log + 'tx hash:'+hash);
-    let receipt = await getTransactionReceipt(hash);
+    let receipt = await getTransactionReceipt(web3, hash);
     console.log(receipt);
 }
 
@@ -104,7 +86,7 @@ async function i_initAsset(initialOtaAddress, otaKeyBytes, value){
 	await wchainSendRawTransaction(config_address, config_privatekey, payload, "call contract initAsset");
 }
 
-async function i_privacyTransfer(otaSenderAddress, otaReceiverAddress, receiverKeyBytes, value, senderPrivateKey){
+async function i_privacyTransfer(otaSenderAddress, otaReceiverAddress, receiverKeyBytes, value, senderPrivateKey) {
 	var hash = ethUtil.otaHash(otaSenderAddress, otaReceiverAddress,
 		receiverKeyBytes, ethUtil.numberToBytes32(value));
 	var sig = ethUtil.otaSign(hash, senderPrivateKey);
@@ -169,5 +151,3 @@ async function main(){
 }
 
 main();
-
-

@@ -9,17 +9,19 @@ var Tx = require('wanchain-util').ethereumTx;
 var ethUtil = require('wanchain-util').ethereumUtil;
 //ethUtil.crypto = require('crypto');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var config = require('./config');
+
+var web3 = new Web3(new Web3.providers.HttpProvider(config.host + ':' + config.port));
 
 var fs = require('fs');
-var srcDir = typeof(__dirname) == 'undefined' ? '' : __dirname;
+var srcDir = typeof(__dirname) === 'undefined' ? '' : __dirname;
 
 let contractName = process.argv[2];
 if(!contractName){
     contractName = "PrivacyTokenBase";
 }else{
     let index = contractName.indexOf('.sol');
-    if(index != -1){
+    if(index !== -1){
         contractName = contractName.slice(0,index);
     }
 }
@@ -35,8 +37,8 @@ var myTestContract = web3.eth.contract(JSON.parse(compiled.contracts[':'+contrac
 
 console.log(compiled.contracts[':'+contractName].interface);
 
-var config_privatekey = 'a4369e77024c2ade4994a9345af5c47598c7cfb36c65e8a4a3117519883d9014';
-var config_pubkey = '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e';
+var config_privatekey = config.privatekey;
+var config_pubkey = config.pubkey;
 
 
 
@@ -89,4 +91,3 @@ let globalHash = "";
             console.log(err);
         }
 	});
-
