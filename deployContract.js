@@ -58,7 +58,7 @@ let globalHash = "";
 	  Txtype: '0x1',
 	  nonce: serial,
 	  gasPrice: '0xb88745', 
-	  gasLimit: '0x2000000',
+	  gasLimit: '0x90000',
 	  to: '',
 	  value: hexValue,
 	  from: config_pubkey,
