@@ -1,4 +1,4 @@
-
+let fs = require('fs');
 let ethUtil = require('ethereumjs-util');
 let wanEthUtil = require('wanchain-util');
 let ethUtilCrypto = require('crypto');
@@ -83,7 +83,8 @@ main = function () {
 		n: 1024
 	};
 
-	toV3(password, opts);
+	let keystore = toV3(password, opts);
+	fs.writeFileSync('keystore-test.json', JSON.stringify(keystore));
 
 };
 
