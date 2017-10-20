@@ -5,14 +5,6 @@ let ethUtilCrypto = require('crypto');
 let ethUtilScrypt = require('scryptsy');
 let ethUtilUuid = require('uuid');
 
-wallert = function() {
-	let pk1 = ethUtilCrypto.randomBytes(32);
-	let pk2 = ethUtilCrypto.randomBytes(32);
-	let priv = pk1 + '-' + pk2;
-
-	return priv;
-};
-
 toV3 = function (password, opts) {
 	var Crypto = [];
 	var privKey = [];
@@ -48,7 +40,7 @@ toV3 = function (password, opts) {
 			throw new Error('Unsupported cipher')
 		}
 
-		var ciphertext = Buffer.concat([cipher.update(wallert().split('-')[i]), cipher.final()]);
+		var ciphertext = Buffer.concat([cipher.update(ethUtilCrypto.randomBytes(32)), cipher.final()]);
 
 		var mac = ethUtil.sha3(Buffer.concat([derivedKey.slice(16, 32), new Buffer(ciphertext, 'hex')]));
 
