@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2c12b230-aaab-4c99-a32b-66e97bccb9a4" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/config.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/utils/wanchainLog.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Monitor.js" afterPath="$PROJECT_DIR$/Monitor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/preCompiledTest.js" afterPath="$PROJECT_DIR$/preCompiledTest.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/StampTest.sol" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/TokenBaseTest.sol" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/test-monitor.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/test_generateHashforRing.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/test/test_preCompiled.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -29,11 +32,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Monitor.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Monitor.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Monitor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
-              <caret line="118" column="45" lean-forward="true" selection-start-line="118" selection-start-column="45" selection-end-line="118" selection-end-column="45" />
+            <state relative-caret-position="88">
+              <caret line="118" column="61" lean-forward="true" selection-start-line="118" selection-start-column="61" selection-end-line="118" selection-end-column="61" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="59" column="5" lean-forward="false" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -103,7 +116,6 @@
         <option value="$PROJECT_DIR$/test/newWallet.js" />
         <option value="$PROJECT_DIR$/stampTest.js" />
         <option value="$PROJECT_DIR$/privacyTest.js" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/test/test-monitor.js" />
         <option value="$PROJECT_DIR$/test/test_preCompiled.js" />
         <option value="$PROJECT_DIR$/createKeystore.js" />
@@ -115,6 +127,7 @@
         <option value="$PROJECT_DIR$/config.js" />
         <option value="$PROJECT_DIR$/preCompiledTest.js" />
         <option value="$PROJECT_DIR$/Monitor.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -317,12 +330,12 @@
       <workItem from="1507690203167" duration="170000" />
       <workItem from="1507804123293" duration="3478000" />
       <workItem from="1508139852231" duration="483000" />
-      <workItem from="1508142154100" duration="58137000" />
+      <workItem from="1508142154100" duration="58318000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="99715000" />
+    <option name="totallyTimeSpent" value="99896000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="1084" extended-state="6" />
@@ -671,14 +684,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="46" column="0" lean-forward="true" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/utils/wanchainLog.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
@@ -705,8 +710,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Monitor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="118" column="45" lean-forward="true" selection-start-line="118" selection-start-column="45" selection-end-line="118" selection-end-column="45" />
+        <state relative-caret-position="88">
+          <caret line="118" column="61" lean-forward="true" selection-start-line="118" selection-start-column="61" selection-end-line="118" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="59" column="5" lean-forward="false" selection-start-line="59" selection-start-column="5" selection-end-line="59" selection-end-column="5" />
           <folding />
         </state>
       </provider>
