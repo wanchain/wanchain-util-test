@@ -1,7 +1,7 @@
 # wanchain-util-test
 wanchain util js package test project
 
-一、development environment：
+	development environment：
 	node v8+ ，npm v4+
  
 	1. download code: 
