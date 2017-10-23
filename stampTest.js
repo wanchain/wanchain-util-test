@@ -14,7 +14,7 @@ var solc = require('solc');
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 var srcDir = typeof(__dirname) == 'undefined' ? '' : __dirname;
-var content = fs.readFileSync(path.join(srcDir, "WanchainStamps.sol"), 'utf8');
+var content = fs.readFileSync(path.join(srcDir + '/sol/', "WanchainStamps.sol"), 'utf8');
 
 var compiled = solc.compile(content, 1);
 var privacyContract = web3.eth.contract(JSON.parse(compiled.contracts[':WanchainStamps'].interface));

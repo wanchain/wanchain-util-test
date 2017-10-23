@@ -30,7 +30,7 @@ getOTAMixSet.setRequestManager(web3.eth._requestManager);
 var contractInstanceAddress = config.contractInstanceAddress;
 
 let keyPassword = "wanglu";
-let keystoreStr = fs.readFileSync("./mykeystore.json","utf8");
+let keystoreStr = fs.readFileSync("./keystore/mykeystore.json","utf8");
 let keystore = JSON.parse(keystoreStr);
 let keyAObj = {version:keystore.version, crypto:keystore.crypto};
 let keyBObj = {version:keystore.version, crypto:keystore.crypto2};

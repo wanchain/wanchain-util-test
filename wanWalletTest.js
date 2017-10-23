@@ -27,7 +27,7 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 		case '1':
 			wanchainLog('input: mykeystore2', config.consoleColor.COLOR_FgGreen);
 			prompt.get(require('./utils/schema/mykeystore2'), function (err, result) {
-				let keystoreStr = fs.readFileSync("./mykeystore2.json","utf8");
+				let keystoreStr = fs.readFileSync("./keystore/mykeystore2.json","utf8");
 				let keystore = JSON.parse(keystoreStr);
 				console.log('you keystore: ', keystore);
 
