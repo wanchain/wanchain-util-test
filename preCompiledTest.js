@@ -71,7 +71,7 @@ async function preScTransfer(fromsk,fromaddress, toWaddr, value){
     console.log(receipt);
 }
 async function main(){
-    let value = 200000000000000000;
+    let value = 1000000000000000000;
     await preScTransfer(from_sk,from_address, to_waddress,  value);
 }
 
