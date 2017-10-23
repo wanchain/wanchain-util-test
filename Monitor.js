@@ -31,7 +31,7 @@ getOTAMixSet.setRequestManager(web3.eth._requestManager);
 var contractInstanceAddress = config.contractInstanceAddress;
 
 let keyPassword = "wanglu";
-let keystoreStr = fs.readFileSync("./keystore/mykeystore.json","utf8");
+let keystoreStr = fs.readFileSync("./keystore/mykeystore2.json","utf8");
 let keystore = JSON.parse(keystoreStr);
 let keyAObj = {version:keystore.version, crypto:keystore.crypto};
 let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
@@ -162,7 +162,7 @@ async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x40',
+        gasPrice: '0x4a817c800',
         gasLimit: '0x60000',
         to: contractInstanceAddress,//contract address
         value: '0x00',
