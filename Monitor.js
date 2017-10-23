@@ -12,19 +12,26 @@ var keythereum = require("keythereum");
 var ethUtil = require('wanchain-util').ethereumUtil;
 var Tx = require('wanchain-util').ethereumTx;
 
-const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var config = require('./config');
+
+var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
+var wanchainLog = require('./utils/wanchainLog');
+
+
 var getOTAMixSet = new Method({
     name: 'getOTAMixSet',
     call: 'eth_getOTAMixSet',
     params: 2
 });
+
 getOTAMixSet.attachToObject(web3.eth);
 getOTAMixSet.setRequestManager(web3.eth._requestManager);
 //web3.wan = new Wan(web3);
 
-var contractInstanceAddress = "0x0000000000000000000000000000000000000006";
+var contractInstanceAddress = config.contractInstanceAddress;
+
 let keyPassword = "wanglu";
-let keystoreStr = fs.readFileSync("./mykeystore.json","utf8");
+let keystoreStr = fs.readFileSync("./keystore/mykeystore.json","utf8");
 let keystore = JSON.parse(keystoreStr);
 let keyAObj = {version:keystore.version, crypto:keystore.crypto};
 let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
@@ -192,9 +199,11 @@ function handleTransaction(tx)
             let otaS1 = otaPub.B;
             let A1 = ethUtil.generateA1(privKeyB, pubKeyA, otaS1);
 
-            if(A1.toString('hex') == otaA1.toString('hex')){
-                console.log("received a privacy transaction to me:",ota);
-                console.log("the value is ", value);
+            if(A1.toString('hex') === otaA1.toString('hex')){
+	              wanchainLog('======START======', config.consoleColor.COLOR_FgGreen);
+
+	              console.log("received a privacy transaction to me: ",ota);
+                console.log("the value is: ", value);
                 let otaSet = web3.eth.getOTAMixSet(ota, 3);
                 console.log("fetch  ota set:",otaSet);
                 let otaSetBuf = [];
@@ -206,7 +215,10 @@ function handleTransaction(tx)
                 let otaSk = ethUtil.computeWaddrPrivateKey(ota, privKeyA,privKeyB);
                 let otaPub = ethUtil.recoverPubkeyFromWaddress(ota);
                 await otaRefund(otaSk,otaPub.A,otaSetBuf,value);
-                console.log("New balance of",keystore.address," is:",web3.eth.getBalance(keystore.address).toString());
+                console.log("New balance of",keystore.address," is: ",web3.eth.getBalance(keystore.address).toString());
+
+	      wanchainLog('======END======', config.consoleColor.COLOR_FgGreen);
+	      console.log('\n');
             }
         }
     });
@@ -245,8 +257,8 @@ filterTest();
 //syncBlockHandler(11953);
 //let rawOta = '76ee5a82703e657f1ca5a2cd59ed26c4a1f823d9ef7f51fb5de5d0dea9368a7658b370194a19e4c08403650b4bad2941c198600babf0b9ebd3ac4f57021991d4205b582b9502a3c81e1f3db1c73a3d578b920402b5b54da5518e9c0330b7ca94d7378fb1fb9c0a1f9db2858734eb721d7d2607b831f1f82f766b9fc509f24f6f';
 async function testRefund() {
-    let ota = "020c4b2f38d14da15ba34fecdd47f2ba7fcb5f559d5b0bc1b70e9474c98f71dcd2035f25e184a35dea778d984d0eba6ba81eeb9935eefa869b1ecc3dab8fd6124314";
-    let value = "1000000000000000000";
+    let ota = config.ota;
+    let value = ota.refundValue;
     let otaSet = web3.eth.getOTAMixSet(ota, 3);
     let otaSetBuf = [];
     for(let i=0; i<otaSet.length; i++){
@@ -254,12 +266,13 @@ async function testRefund() {
         let rpcu = secp256k1.publicKeyConvert(rpkc, false);
         otaSetBuf.push(rpcu);
     }
-    console.log("fetch  ota set:",otaSet);
+
+    console.log("fetch  ota set: ",otaSet);
     let otaSk = ethUtil.computeWaddrPrivateKey(ota, privKeyA,privKeyB);
     let otaPub = ethUtil.recoverPubkeyFromWaddress(ota);
 
     await otaRefund(otaSk,otaPub.A,otaSetBuf,value);
-    console.log("New balance of",keystore.address," is:",web3.eth.getBalance(keystore.address).toString());
+    console.log("New balance of",keystore.address," is: ",web3.eth.getBalance(keystore.address).toString());
 
 }
 

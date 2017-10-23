@@ -25,7 +25,7 @@ if(!contractName){
 }
 
 console.log(contractName);
-var content = fs.readFileSync(path.join(srcDir, contractName+".sol"), 'utf8');
+var content = fs.readFileSync(path.join(srcDir + '/sol/', contractName+".sol"), 'utf8');
 
 //var content = fs.readFileSync("beida.js", 'utf8');
 var solc = require('solc');

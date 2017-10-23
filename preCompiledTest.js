@@ -10,15 +10,17 @@ var Tx = require('wanchain-util').ethereumTx;
 var ethUtil = require('wanchain-util').ethereumUtil;
 var solc = require('solc');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var config = require('./config');
+var wanchainLog = require('./utils/wanchainLog');
 
-var contractInstanceAddress = "0x0000000000000000000000000000000000000006";
+var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 
-var from_sk = 'a4369e77024c2ade4994a9345af5c47598c7cfb36c65e8a4a3117519883d9014';
-var from_address = '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e';
+var contractInstanceAddress = config.contractInstanceAddress;
 
-
-let to_waddress = "0x0340721B2B6C7970A443B215951C7BAa4c41c35E2b591EA51016Eae523f5E123760354b82CccbEdC5c84F16D63414d44F595d85FD9e46C617E29e3AE2e82C5F7bDA9";
+var from_sk = config.from_sk;
+var from_address = config.from_address;
+var to_waddress = config.to_waddress;
+var value = config.transferValue;
 
 function getTransactionReceipt(txHash)
 {
@@ -46,7 +48,7 @@ function getTransactionReceipt(txHash)
 
 async function preScTransfer(fromsk,fromaddress, toWaddr, value){
     var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr);
-    console.log(otaDestAddress);
+    console.log('otaDestAddress: ', otaDestAddress);
     let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
     var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
     var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
@@ -65,13 +67,14 @@ async function preScTransfer(fromsk,fromaddress, toWaddr, value){
     tx.sign(privateKey);
     var serializedTx = tx.serialize();
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
-    console.log("serializeTx" + serializedTx.toString('hex'));
-    console.log('tx hash:'+hash);
+
+    wanchainLog('serializeTx: ' + serializedTx.toString('hex'), config.consoleColor.COLOR_FgGreen);
+		wanchainLog('tx hash: ' + hash, config.consoleColor.COLOR_FgRed);
+
     let receipt = await getTransactionReceipt(hash);
-    console.log(receipt);
+		wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
 }
 async function main(){
-    let value = 1000000000000000000;
     await preScTransfer(from_sk,from_address, to_waddress,  value);
 }
 
