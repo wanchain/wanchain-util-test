@@ -197,15 +197,43 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 			try {
 				let otaDataStr = fs.readFileSync("./utils/otaData.txt","utf8");
 				let otaData = otaDataStr.split('\n');
+
+				let otaDataStateStr = fs.readFileSync("./utils/otaDataState.txt","utf8");
+				let otaDataState = otaDataStateStr.split('\n');
+
+				var statTuple = [];
+
+				var otaDict = [];
+				for (var i =0; i<otaDataState.length; i++) {
+					if(otaDataState[i].trim().length >0) {
+						var otaState = otaDataState[i].split('{')[1].split(':')[0].split('"')[1];
+						statTuple.push(otaState);
+						otaDict.push(otaDataState[i].split('{')[1].split('}')[0]);
+					}
+				}
+
+				var otaDictStr = '{';
+				for (var i =0; i< otaDict.length; i++) {
+					otaDictStr += otaDict[i];
+					if (i !== otaDict.length -1) {
+						otaDictStr += ',';
+					}
+				}
+
+				otaDictStr += '}';
+
+				otaDictStr = JSON.parse(otaDictStr);
+
 				for (var i = 0; i<otaData.length; i++) {
+					var index = i +1;
 					if (otaData[i].trim().length >0) {
 						var otaDataJson = JSON.parse(otaData[i]);
-						if (i === 0) {
-							otaDataJson.state = 'Undo';
+
+						if (statTuple.indexOf(otaDataJson.ota) === -1) {
+							wanchainLog('Your otaData ' + index + ' >> '  + ' ota: ' + otaDataJson.ota + ' value: ' + otaDataJson.value + ' state: ' + otaDataJson.state, config.consoleColor.COLOR_FgGreen);
 						} else {
-							otaDataJson.state = 'Done';
+							wanchainLog('Your otaData ' + index + ' >> '  + ' ota: ' + otaDataJson.ota + ' value: ' + otaDataJson.value + ' state: ' + otaDictStr[otaDataJson.ota], config.consoleColor.COLOR_FgGreen);
 						}
-						wanchainLog('Your otaData: ' + JSON.stringify(otaDataJson), config.consoleColor.COLOR_FgGreen);
 					}
 				}
 			} catch (e) {

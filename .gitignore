@@ -60,3 +60,4 @@ typings/
 test/
 .idea/
 otaData.txt
+otaDataState.txt

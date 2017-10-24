@@ -54,7 +54,7 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 	let receipt = await getTransactionReceipt(web3, hash);
 
 	value = inputValue * 10 ** 18;
-	var data = {ota: otaDestAddress.split('x')[1], value: value.toString()};
+	var data = {ota: otaDestAddress.split('x')[1], value: value.toString(), state: 'Undo'};
 	console.log('value: ', inputValue * 10**18);
 	console.log('otaDestAddress: ', otaDestAddress);
 
