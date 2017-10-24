@@ -4,9 +4,11 @@ wanwallet's explanation and operation：
 
 	1. development environment:
 		node v8+ ，npm v4+
+		you are better run it on linux/unix/ubuntu.
 
 	2. main file:
-		wanWalletTest.js
+		listenOTA.js: You should run it all the time first, it is used to monitor OTA transactions.
+		wanWalletTest.js: This file was used to simulate the function of wanWallet.
 
 	3. two test address:
 		sender_address: {address: '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e'}
@@ -37,4 +39,6 @@ wanwallet's explanation and operation：
 	2. install modules:
 		npm install
 
-	3. node wanWalletTest.js
+	3. node listenOTA.js (run all the time)
+
+	4. node wanWalletTest.js (run it in a new window)
