@@ -13,11 +13,13 @@ var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 var wanchainLog = require('./utils/wanchainLog');
 var sendTransaction = require('./utils/sendTransaction');
 var preScTransfer = require('./utils/preScTransfer');
+var otaTransaction = require('./utils/otaTransaction');
 
 // Start the prompt
 prompt.start();
 prompt.message = colors.blue("wanWallet");
 prompt.delimiter = colors.green("$");
+
 
 
 wanchainLog(
@@ -147,18 +149,39 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 					let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
 					var privKeyA = keythereum.recover(result.keyPassword, keyAObj);
 					var privKeyB = keythereum.recover(result.keyPassword, keyBObj);
-					let myWaddr = keystore.waddress;
-					let PubKey = ethUtil.recoverPubkeyFromWaddress(myWaddr);
-					let pubKeyA = PubKey.A;
+					let address = keystore.address;
 
 					wanchainLog('Perfect! Now your address had unlocked, would you want to send transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
+
+					prompt.get(require('./utils/schema/isTransaction'), function (err, result) {
+						var theState = result.state.toLowerCase();
+						switch (theState) {
+							case 'y':
+								wanchainLog('input ota ', config.consoleColor.COLOR_FgGreen);
+								prompt.get(require('./utils/schema/otaAddress'), function (err, result) {
+									var ota = result.address;
+
+									wanchainLog('input value ', config.consoleColor.COLOR_FgGreen);
+									prompt.get(require('./utils/schema/theValue'), function (err, result) {
+										var value = result.value;
+
+										otaTransaction(web3,ethUtil, Tx, ota, value, privKeyA, privKeyB, address);
+									});
+								});
+								break;
+
+							case 'n':
+								wanchainLog('Bye!', config.consoleColor.COLOR_FgGreen);
+								break;
+						}
+					});
 				});
 			});
 			break;
 
 		//todo: Check the Ordinary Transaction balance
 		case '4':
-			wanchainLog('You had choice 3(Check the Ordinary Transaction balance)', config.consoleColor.COLOR_FgYellow);
+			wanchainLog('You had choice 4(Check the Ordinary Transaction balance)', config.consoleColor.COLOR_FgYellow);
 
 			prompt.get(require('./utils/schema/balanceSchema'), function (err, result) {
 				var balance = web3.eth.getBalance(result.balance);

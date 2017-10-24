@@ -51,6 +51,8 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 
 	let receipt = await getTransactionReceipt(web3, hash);
 	wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
+
+	wanchainLog('You had finish a privacy transaction, go to listenOTA get "ota" and "value" then run wanWalletTest.js and choice 3(OTA Transaction) ', config.consoleColor.COLOR_FgGreen);
 }
 
 module.exports = preScTransfer;
