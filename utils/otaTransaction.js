@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+var fs = require('fs');
 const Method = require("web3/lib/web3/method");
 const BN = require('bn.js');
 const secp256k1 = require('secp256k1');
@@ -10,27 +10,27 @@ var wanchainLog = require('./wanchainLog');
 
 var contractInstanceAddress = config.contractInstanceAddress;
 
-function getTransactionReceipt(web3, txHash) {
-    return new Promise(function(success,fail){
-        let filter = web3.eth.filter('latest');
-        let blockAfter = 0;
-        filter.watch(function(err,blockhash){
-            if(err ){
-                console.log("err:"+err);
-                fail("err:"+err);
-            }else{
-                let receipt = web3.eth.getTransactionReceipt(txHash);
-                blockAfter += 1;
-                if(receipt){
-                    filter.stopWatching();
-                    success(receipt);
-                    return receipt;
-                }else if(blockAfter > 6){
-                    fail("Get receipt timeout");
-                }
-            }
-        });
-    });
+function getTransactionReceipt(web3, txHash)
+{
+	return new Promise(function(success,fail){
+		let filter = web3.eth.filter('latest');
+		let blockAfter = 0;
+		filter.watch(function(err,blockhash){
+			if(err ){
+				console.log("err: "+err);
+			}else{
+				let receipt = web3.eth.getTransactionReceipt(txHash);
+				blockAfter += 1;
+				if(receipt){
+					filter.stopWatching();
+					success(receipt);
+					return receipt;
+				}else if(blockAfter > 6){
+					fail("Get receipt timeout");
+				}
+			}
+		});
+	});
 }
 
 function generateHashforRing(fromAddr, value){
@@ -85,6 +85,7 @@ function generatePubkeyWQforRing(Pubs, w, q){
     return KWQ;
 }
 async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, ringPubKs, value) {
+
     let M = generateHashforRing(address, value);// M = hash(rawTx). we need determine which item join the hash. ethUtil.otaHash??
     let ringArgs = ethUtil.getRingSign(M, otaSk,otaPubK,ringPubKs);
     if(!ethUtil.verifyRinSign(ringArgs)){
@@ -114,6 +115,7 @@ async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, rin
     let all = Buffer.concat([OP, KWQ, IB, MH]);
 
     var serial = '0x' + web3.eth.getTransactionCount('0x'+address).toString(16);
+
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
@@ -131,8 +133,11 @@ async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, rin
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
     console.log("serializeTx:" + serializedTx.toString('hex'));
     console.log('tx hash:'+hash);
-    let receipt = await getTransactionReceipt(web3, hash);
-    console.log(receipt);
+
+		wanchainLog('waiting for... ', config.consoleColor.COLOR_FgGreen);
+
+		let receipt = await getTransactionReceipt(web3, hash);
+		console.log('receipt: ', receipt);
 }
 
 
@@ -158,10 +163,11 @@ async function testRefund(web3,ethUtil, Tx, ota, value, privKeyA, privKeyB, addr
     }
 
     console.log("fetch  ota set: ",otaSet);
+
     let otaSk = ethUtil.computeWaddrPrivateKey(ota, privKeyA,privKeyB);
     let otaPub = ethUtil.recoverPubkeyFromWaddress(ota);
 
-    await otaRefund(web3,ethUtil, Tx, address, privKeyA, otaSk,otaPub.A,otaSetBuf,value);
+    await otaRefund(web3, ethUtil, Tx, address, privKeyA, otaSk,otaPub.A,otaSetBuf,value);
 }
 
 module.exports = testRefund;

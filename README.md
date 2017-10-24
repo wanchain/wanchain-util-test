@@ -4,7 +4,7 @@ wanwallet's explanation and operation：
 
 	1. development environment:
 		node v8+ ，npm v4+
-		you are better run it on linux/unix/ubuntu.
+		you are best run it on linux/unix/ubuntu.
 
 	2. main files:
 		listenOTA.js: You should run it all the time first, it is used to monitor OTA transactions.
@@ -31,7 +31,7 @@ wanwallet's explanation and operation：
 		5.5: Check OTA balance
 
 
-二. Operation:
+二. Operation:git
 
 	1. download code:
 		git clone git@github.com:wanchain/wanchain-util-test.git
@@ -39,7 +39,7 @@ wanwallet's explanation and operation：
 	2. install modules:
 		npm install
 
-	3. node listenOTA.js (run all the time)
+	3. node listenOTA.js ( if you want to monitor the ota transaction, you should run it all the time)
 
 	4. node wanWalletTest.js (run it in a new window)
 		when you run it , then will prompt you pls input:
@@ -55,19 +55,18 @@ wanwallet's explanation and operation：
 			4.2: 4 => 1 => 4
 				First check then balance, then finish a ordinary transaction, last check balance.
 			4.3: 2 => 3 => 5
-				4.3.1: first finish a privacy transaction
-				4.3.2: go to the listenOTA.js window and remember the 'ota' and 'value' data
+				4.3.1: first finish a privacy transaction, the privacy transaction will save 'ota' and 'value' into './utils/otaData.txt' file.
+				4.3.2: open './utils/otaData.txt' and remember the 'ota' and 'value' data
 				4.3.3: use the 'ota' and 'value' finish a ota transaction.
 				4.3.4: check the ota balance
 			4.4: 5 => 2 => 3 => 5
 				4.4.1: check the ota balance
-				4.4.2: first finish a privacy transaction
-				4.4.3: go to the listenOTA.js window and remember the 'ota' and 'value' data
+				4.4.2: first finish a privacy transaction, the privacy transaction will save 'ota' and 'value' into './utils/otaData.txt' file.
+				4.4.3: open './utils/otaData.txt' and remember the 'ota' and 'value' data
 				4.4.4: use the 'ota' and 'value' finish a ota transaction.
 				4.4.5: check the ota balance
 			4.5: 5 => 2 => 3
 				4.5.1: check the ota balance
-				4.5.2: first finish a privacy transaction
-				4.5.3: go to the listenOTA.js window and remember the 'ota' and 'value' data
+				4.5.2: first finish a privacy transaction, the privacy transaction will save 'ota' and 'value' into './utils/otaData.txt' file.
+				4.5.3: open './utils/otaData.txt' and remember the 'ota' and 'value' data
 				4.5.4: use the 'ota' and 'value' finish a ota transaction.
-

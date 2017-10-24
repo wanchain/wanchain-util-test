@@ -117,7 +117,7 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 										var bnSendValueInWei = new web3.BigNumber(strSendValueInWei);
 										var value = '0x' + bnSendValueInWei.toString(16);
 
-										preScTransfer(web3, Tx, ethUtil, privKeyA,address, to_waddress, contractInstanceAddress, value, wanchainLog);
+										preScTransfer(web3, Tx, ethUtil, privKeyA,address, to_waddress, contractInstanceAddress, value, result.value, wanchainLog);
 									});
 								});
 								break;
@@ -161,7 +161,7 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 								prompt.get(require('./utils/schema/otaAddress'), function (err, result) {
 									var ota = result.address;
 
-									wanchainLog('input value ', config.consoleColor.COLOR_FgGreen);
+									wanchainLog('input value (eth) ', config.consoleColor.COLOR_FgGreen);
 									prompt.get(require('./utils/schema/theValue'), function (err, result) {
 										var value = result.value;
 

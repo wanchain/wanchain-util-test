@@ -1,4 +1,4 @@
-
+var fs = require('fs');
 var config = require('../config');
 
 function getTransactionReceipt(web3, txHash)
@@ -24,9 +24,9 @@ function getTransactionReceipt(web3, txHash)
 	});
 }
 
-async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, contractInstanceAddress, value, wanchainLog){
+async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, contractInstanceAddress, value, inputValue, wanchainLog){
 	var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr);
-	console.log('otaDestAddress: ', otaDestAddress);
+
 	let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
 	var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
 	var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
@@ -49,7 +49,18 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 	wanchainLog('serializeTx: ' + serializedTx.toString('hex'), config.consoleColor.COLOR_FgGreen);
 	wanchainLog('tx hash: ' + hash, config.consoleColor.COLOR_FgRed);
 
+	wanchainLog('waiting for... ', config.consoleColor.COLOR_FgGreen);
+
 	let receipt = await getTransactionReceipt(web3, hash);
+
+	value = inputValue * 10 ** 18;
+	var data = {ota: otaDestAddress.split('x')[1], value: value.toString()};
+	console.log('value: ', inputValue * 10**18);
+	console.log('otaDestAddress: ', otaDestAddress);
+
+	var log = fs.createWriteStream('./utils/otaData.txt', {'flags': 'a'});
+	log.end(JSON.stringify(data) + '\n');
+
 	wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
 
 	wanchainLog('You had finish a privacy transaction, go to listenOTA get "ota" and "value" then run wanWalletTest.js and choice 3(OTA Transaction) ', config.consoleColor.COLOR_FgGreen);
