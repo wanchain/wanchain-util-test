@@ -194,7 +194,24 @@ prompt.get(require('./utils/schema/choiceMethod'), function (err, result) {
 		case '5':
 			wanchainLog('You had choice 5(Check OTA balance)', config.consoleColor.COLOR_FgYellow);
 
-			wanchainLog('This modules build soon...', config.consoleColor.COLOR_FgRed);
+			try {
+				let otaDataStr = fs.readFileSync("./utils/otaData.txt","utf8");
+				let otaData = otaDataStr.split('\n');
+				for (var i = 0; i<otaData.length; i++) {
+					if (otaData[i].trim().length >0) {
+						var otaDataJson = JSON.parse(otaData[i]);
+						if (i === 0) {
+							otaDataJson.state = 'Undo';
+						} else {
+							otaDataJson.state = 'Done';
+						}
+						wanchainLog('Your otaData: ' + JSON.stringify(otaDataJson), config.consoleColor.COLOR_FgGreen);
+					}
+				}
+			} catch (e) {
+				wanchainLog('Not have otaData.', config.consoleColor.COLOR_FgRed);
+			}
+
 			break;
 	}
 });
