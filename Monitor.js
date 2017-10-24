@@ -3,30 +3,20 @@
 const fs = require('fs');
 const path = require('path');
 const Web3 = require("web3");
-//const Wan = require("./web3Wan.js");
-const Method = require("web3/lib/web3/method");
 const BN = require('bn.js')
 const secp256k1 = require('secp256k1');
 
 var keythereum = require("keythereum");
-var ethUtil = require('wanchain-util').ethereumUtil;
-var Tx = require('wanchain-util').ethereumTx;
+let wanUtil = require('wanchain-util');
+var ethUtil = wanUtil.ethereumUtil;
+var Tx = wanUtil.ethereumTx;
 
 var config = require('./config');
 
 var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 var wanchainLog = require('./utils/wanchainLog');
 
-
-var getOTAMixSet = new Method({
-    name: 'getOTAMixSet',
-    call: 'eth_getOTAMixSet',
-    params: 2
-});
-
-getOTAMixSet.attachToObject(web3.eth);
-getOTAMixSet.setRequestManager(web3.eth._requestManager);
-//web3.wan = new Wan(web3);
+web3.wan = new wanUtil.web3Wan(web3);
 
 var contractInstanceAddress = config.contractInstanceAddress;
 
@@ -204,7 +194,7 @@ function handleTransaction(tx)
 
 	              console.log("received a privacy transaction to me: ",ota);
                 console.log("the value is: ", value);
-                let otaSet = web3.eth.getOTAMixSet(ota, 3);
+                let otaSet = web3.wan.getOTAMixSet(ota, 3);
                 console.log("fetch  ota set:",otaSet);
                 let otaSetBuf = [];
                 for(let i=0; i<otaSet.length; i++){
@@ -259,7 +249,7 @@ filterTest();
 async function testRefund() {
     let ota = config.ota;
     let value = ota.refundValue;
-    let otaSet = web3.eth.getOTAMixSet(ota, 3);
+    let otaSet = web3.wan.getOTAMixSet(ota, 3);
     let otaSetBuf = [];
     for(let i=0; i<otaSet.length; i++){
         let rpkc = new Buffer(otaSet[i].slice(0,66),'hex');
