@@ -6,8 +6,10 @@ var path = require('path');
 var Web3 = require('web3');
 var events = require('events');
 
-var Tx = require('wanchain-util').ethereumTx;
-var ethUtil = require('wanchain-util').ethereumUtil;
+let wanUtil = require('wanchain-util');
+var ethUtil = wanUtil.ethereumUtil;
+var Tx = wanUtil.ethereumTx;
+let coinSCDefinition = wanUtil.coinSCAbi;
 var solc = require('solc');
 
 var config = require('./config');
@@ -16,6 +18,9 @@ var wanchainLog = require('./utils/wanchainLog');
 var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 
 var contractInstanceAddress = config.contractInstanceAddress;
+let contractCoinSC = web3.eth.contract(coinSCDefinition);
+let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
+
 
 var from_sk = config.from_sk;
 var from_address = config.from_address;
@@ -47,16 +52,17 @@ function getTransactionReceipt(txHash)
 
 
 async function preScTransfer(fromsk,fromaddress, toWaddr, value){
-    var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr);
+    var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr).toLowerCase();
     console.log('otaDestAddress: ', otaDestAddress);
-    let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
+    //let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
+    let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
     var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
     var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
     var rawTx = {
         Txtype: '0x0',
         nonce: serial,
-        gasPrice: '0x80000',
-        gasLimit: '0x10000',
+        gasPrice: '0x6fc23ac00',
+        gasLimit: '0xf4240',
         to: contractInstanceAddress,//contract address
         value: value,
         data: payload
