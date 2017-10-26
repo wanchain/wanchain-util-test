@@ -8,11 +8,11 @@ var path = require('path');
 
 
 function createKeystore(password, fileName, wanchainLog) {
-	var filename = __dirname + '/keystore/' + fileName + '.json';
+	var filepath = __dirname + '/keystore/' + fileName + '.json';
 	var result = [];
 
 	try {
-		fs.readFileSync(filename, 'utf8');
+		fs.readFileSync(filepath, 'utf8');
 
 		result = [false];
 		return result;
@@ -80,8 +80,8 @@ function createKeystore(password, fileName, wanchainLog) {
 
 		result = [true, data];
 
-		fs.writeFileSync(filename, JSON.stringify(result));
-		wanchainLog('\naddress: ' + data.address + '\nwaddress: ' + data.waddress + '\npassword: ' + password + '\nfilePath: ' + filename, '\x1b[32m');
+		fs.writeFileSync(filepath, JSON.stringify(result));
+		wanchainLog('\naddress: ' + data.address + '\nwaddress: ' + data.waddress + '\npassword: ' + password + '\nfilename: ' + fileName, '\x1b[32m');
 		console.log('the keystore file has create success!');
 		return result;
 	}
