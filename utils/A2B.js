@@ -14,7 +14,6 @@ function A2B(prompt, web3, keythereum, Tx, keystoreStr, wanchainLog) {
 
 		try {
 			var privKeyA = keythereum.recover(result.keyPassword, keyAObj);
-			console.log('pr: ', privKeyA);
 			var address = keystore.address;
 
 			var weiToEth = checkBalance(web3, address);
