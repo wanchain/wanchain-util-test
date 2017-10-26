@@ -3,9 +3,9 @@ var colors = require("colors/safe");
 var OrdinaryKeystoreSchema = {
 	properties: {
 		OrdinaryKeystore: {
-			pattern: 'mykeystore',
-			message: 'the file of keystore is mykeystore, so you should input mykeystore',
-			description: colors.magenta("input keystore file name"),
+			pattern: '^[A-Za-z0-9]+$',
+			message: 'consist of numbers and letters.',
+			description: colors.magenta("input keystore file name(without file format)"),
 			required: true
 		}
 	}

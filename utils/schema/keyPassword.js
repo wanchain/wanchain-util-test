@@ -3,8 +3,8 @@ var colors = require("colors/safe");
 var keyPasswordSchema = {
 	properties: {
 		keyPassword: {
-			pattern: 'wanglu',
-			message: "the keystore's password is wanglu",
+			pattern: '[^\u4e00-\u9fa5]+',
+			message: "the password is invalid",
 			description: colors.magenta("input keystore's password"),
 			required: true
 		}

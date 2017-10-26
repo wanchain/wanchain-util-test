@@ -19,7 +19,7 @@ function getTransactionReceipt(web3, txHash, ota)
 			if(err ){
 				var data = {};
 				data[ota] = 'Failed';
-				var log = fs.createWriteStream('./utils/otaDataState.txt', {'flags': 'a'});
+				var log = fs.createWriteStream('./utils/otaData/otaDataState.txt', {'flags': 'a'});
 				log.end(JSON.stringify(data) + '\n');
 				console.log("err: "+err);
 			}else{
@@ -28,7 +28,7 @@ function getTransactionReceipt(web3, txHash, ota)
 				if(receipt){
 					var data = {};
 					data[ota] = 'Done';
-					var log = fs.createWriteStream('./utils/otaDataState.txt', {'flags': 'a'});
+					var log = fs.createWriteStream('./utils/otaData/otaDataState.txt', {'flags': 'a'});
 					log.end(JSON.stringify(data) + '\n');
 					filter.stopWatching();
 					success(receipt);
@@ -36,7 +36,7 @@ function getTransactionReceipt(web3, txHash, ota)
 				}else if(blockAfter > 6){
 					var data = {};
 					data[ota] = 'Failed';
-					var log = fs.createWriteStream('./utils/otaDataState.txt', {'flags': 'a'});
+					var log = fs.createWriteStream('./utils/otaData/otaDataState.txt', {'flags': 'a'});
 					log.end(JSON.stringify(data) + '\n');
 					fail("Get receipt timeout");
 				}
@@ -98,9 +98,14 @@ function generatePubkeyWQforRing(Pubs, w, q){
 }
 async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, ringPubKs, value, ota) {
 
-    let M = generateHashforRing(address, value);// M = hash(rawTx). we need determine which item join the hash. ethUtil.otaHash??
+    let M = generateHashforRing(address.slice(2), value);// M = hash(rawTx). we need determine which item join the hash. ethUtil.otaHash??
+	console.log("M", M);
+	console.log("otaSk", otaSk);
+	console.log("otaPubK", otaPubK);
+	console.log("ringPubKs", ringPubKs);
     let ringArgs = ethUtil.getRingSign(M, otaSk,otaPubK,ringPubKs);
-    if(!ethUtil.verifyRinSign(ringArgs)){
+
+	if(!ethUtil.verifyRinSign(ringArgs)){
         console.log("ring sign is wrong@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         for(let i=0; i<ringPubKs.length; i++){
