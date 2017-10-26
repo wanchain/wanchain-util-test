@@ -58,7 +58,7 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 	console.log('value: ', inputValue * 10**18);
 	console.log('otaDestAddress: ', otaDestAddress);
 
-	var log = fs.createWriteStream('./utils/otaData.txt', {'flags': 'a'});
+	var log = fs.createWriteStream('./utils/otaData/otaData.txt', {'flags': 'a'});
 	log.end(JSON.stringify(data) + '\n');
 
 	wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
