@@ -16,9 +16,9 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 		switch (result.method) {
 			//todo: Ordinary Transaction (A => B)
 			case '1':
-				wanchainLog('You had choice 1(Ordinary Transaction)', config.consoleColor.COLOR_FgYellow);
+				wanchainLog('You choosed 1(Ordinary Transaction)', config.consoleColor.COLOR_FgYellow);
 
-				wanchainLog('input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
+				wanchainLog('Input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
 				prompt.get(require('./utils/schema/mykeystore'), function (err, result) {
 					try {
 						var filename = "./utils/keystore/" + result.OrdinaryKeystore + ".json";
@@ -32,9 +32,9 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 
 			//todo: Privacy Transaction (A => OTA)
 			case '2':
-				wanchainLog('You had choice 2(Privacy Transaction)', config.consoleColor.COLOR_FgYellow);
+				wanchainLog('You choosed 2(Privacy Transaction)', config.consoleColor.COLOR_FgYellow);
 
-				wanchainLog('input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
+				wanchainLog('Input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
 
 				prompt.get(require('./utils/schema/mykeystore'), function (err, result) {
 					try {
@@ -49,9 +49,9 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 
 			//todo: OTA Transaction (OTA => B)
 			case '3':
-				wanchainLog('You had choice 3(OTA Transaction)', config.consoleColor.COLOR_FgYellow);
+				wanchainLog('You choosed 3(Refund Transaction)', config.consoleColor.COLOR_FgYellow);
 
-				wanchainLog('input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
+				wanchainLog('Input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
 				prompt.get(require('./utils/schema/mykeystore'), function (err, result) {
 					try {
 						var filename = "./utils/keystore/" + result.OrdinaryKeystore + ".json";
@@ -65,7 +65,7 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 
 			//todo: Check the Ordinary Transaction balance
 			case '4':
-				wanchainLog('You had choice 4(Check the Ordinary Transaction balance)', config.consoleColor.COLOR_FgYellow);
+				wanchainLog('You choosed 4(Check the Ordinary Transaction balance)', config.consoleColor.COLOR_FgYellow);
 
 				prompt.get(require('./utils/schema/balanceSchema'), function (err, result) {
 					var weiToEth = checkBanlance(web3, result.balance);
@@ -75,7 +75,7 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 
 			//todo: Check OTA balance
 			case '5':
-				wanchainLog('You had choice 5(Check OTA balance)', config.consoleColor.COLOR_FgYellow);
+				wanchainLog('You choosed 5(Check OTAs balance)', config.consoleColor.COLOR_FgYellow);
 
 				try {
 					let otaDataStr = fs.readFileSync("./utils/otaData/otaData.txt","utf8");

@@ -28,13 +28,14 @@ async function sendTransaction(web3, Tx, receiver_address,sender_address, privKe
 	var rawTx = {
 		Txtype: '0x00',
 		nonce: serial,
-		gasPrice: '0x80000',
-		gasLimit: '0x10000',
-		to: receiver_address,//contract address
+        gasPrice: '0x6fc23ac00',
+        gasLimit: '0xf4240',
+    	to: receiver_address,//contract address
 		value: value,
 	};
-
+	console.log("rawTx:", rawTx);
 	var tx = new Tx(rawTx);
+	console.log(privKeyA);
 	tx.sign(privKeyA);
 	var serializedTx = tx.serialize();
 	let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));

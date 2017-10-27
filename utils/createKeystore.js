@@ -19,7 +19,7 @@ function createKeystore(password, fileName, wanchainLog) {
 
 	} catch (e) {
 		var Crypto = [];
-		var privKey = [];
+		var privKeys = [];
 
 		for (var i=0; i<2; i++) {
 
@@ -38,7 +38,7 @@ function createKeystore(password, fileName, wanchainLog) {
 			kdfparams.p = 1;
 			derivedKey = ethUtilScrypt(new Buffer(password), salt, kdfparams.n, kdfparams.r, kdfparams.p, kdfparams.dklen);
 
-			privKey.push(derivedKey);
+			//privKey.push(derivedKey);
 
 			var cipher = ethUtilCrypto.createCipheriv('aes-128-ctr', derivedKey.slice(0, 16), iv);
 			if (!cipher) {
@@ -47,6 +47,7 @@ function createKeystore(password, fileName, wanchainLog) {
 
 			var privkeyRandom = ethUtilCrypto.randomBytes(32);
 			var privkey = Buffer(privkeyRandom, 'hex');
+			privKeys.push(privkey);
 
 			var ciphertext = Buffer.concat([cipher.update(privkey), cipher.final()]);
 
@@ -64,8 +65,8 @@ function createKeystore(password, fileName, wanchainLog) {
 			)
 		}
 
-		var waddress = wanUtil.ethereumUtil.generateWaddrFromPriv(privKey[0], privKey[1]);
-		var address = '0x' + ethUtil.privateToAddress(privKey[0]).toString('hex');
+		var waddress = wanUtil.ethereumUtil.generateWaddrFromPriv(privKeys[0], privKeys[1]);
+		var address = '0x' + ethUtil.privateToAddress(privKeys[0]).toString('hex');
 
 		var data = {
 			version: 3,

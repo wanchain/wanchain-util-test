@@ -1,5 +1,6 @@
 var fs = require('fs');
 var config = require('../config');
+let wanUtil = require('wanchain-util');
 
 function getTransactionReceipt(web3, txHash)
 {
@@ -27,14 +28,20 @@ function getTransactionReceipt(web3, txHash)
 async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, contractInstanceAddress, value, inputValue, wanchainLog){
 	var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr);
 
-	let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
+	//let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
+	let coinSCDefinition = wanUtil.coinSCAbi;
+	var contractInstanceAddress = config.contractInstanceAddress;
+	let contractCoinSC = web3.eth.contract(coinSCDefinition);
+	let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
+	let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
+	console.log("otaDestAddress: ",otaDestAddress);
 	var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
 	var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
 	var rawTx = {
 		Txtype: '0x0',
 		nonce: serial,
-		gasPrice: '0x80000',
-		gasLimit: '0x10000',
+        gasPrice: '0x6fc23ac00',
+        gasLimit: '0xf4240',
 		to: contractInstanceAddress,//contract address
 		value: value,
 		data: payload

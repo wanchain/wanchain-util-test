@@ -3,12 +3,19 @@ var fs = require('fs');
 const Method = require("web3/lib/web3/method");
 const BN = require('bn.js');
 const secp256k1 = require('secp256k1');
+const Web3 = require("web3");
 
 var config = require('../config');
 var wanchainLog = require('./wanchainLog');
+let wanUtil = require('wanchain-util');
+var ethUtil = wanUtil.ethereumUtil;
+var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 
-
+let coinSCDefinition = wanUtil.coinSCAbi;
 var contractInstanceAddress = config.contractInstanceAddress;
+let fhs_buyCoinNote = ethUtil.sha3('buyCoinNote(string,uint256)', 256).slice(0,4).toString('hex');
+let contractCoinSC = web3.eth.contract(coinSCDefinition);
+let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 
 function getTransactionReceipt(web3, txHash, ota)
 {
@@ -45,99 +52,57 @@ function getTransactionReceipt(web3, txHash, ota)
 	});
 }
 
-function generateHashforRing(fromAddr, value){
-    let h = new Buffer(32);
-    h.fill(0);
-    let vbn = new BN(value,10);
-    let vb = vbn.toBuffer();
-    let vbl = vb.length;
-    vb.copy(h, 32-vbl);
-    return h;
-}
-/* the origPayload will be attached to ringSign */
-function generateOrigPayloadforRing(value){
-    let vbn = new BN(value,10);
-    let vb = vbn.toBuffer();
-    let vbl = vb.length;
-    let h = new Buffer(4+128+vbl);
-    h.fill(0);
-    h[0] = 0x02;
-    h[1] = vbl;
-    h[2] = 0;
-    h[3] = 132;
-    vb.copy(h,132);
-    return h;
-}
+
+
 /* set pubkey, w, q */
-function generatePubkeyWQforRing(Pubs, w, q){
+function generatePubkeyIWQforRing(Pubs, I, w, q){
     let length = Pubs.length;
-    let pubsCountB = Buffer.alloc(1);
-    pubsCountB[0] = length;
-    let bufArr = [];
-    bufArr.push(pubsCountB);
+    let sPubs  = [];
     for(let i=0; i<length; i++){
-        let ilen = 1+65+1+32+1+32;
-        let offset = 0;
-        let bi = Buffer.alloc(ilen);
-        bi.fill(0);
-        bi[offset] = 65; // pubkey len
-        offset += 1;
-        Pubs[i].copy(bi,offset);
-        offset += 65;
-        bi[offset] = 32;
-        offset += 1;
-        w[i].copy(bi, offset);
-        offset += 32;
-        bi[offset] = 32;
-        offset += 1;
-        q[i].copy(bi, offset);
-        bufArr.push(bi);
+        sPubs.push(Pubs[i].toString('hex'));
     }
-    let KWQ = Buffer.concat(bufArr);
+    let ssPubs = sPubs.join('&');
+    let ssI = I.toString('hex');
+    let sw  = [];
+    for(let i=0; i<length; i++){
+        sw.push('0x'+w[i].toString('hex').replace(/(^0*)/g,""));
+    }
+    let ssw = sw.join('&');
+    let sq  = [];
+    for(let i=0; i<length; i++){
+        sq.push('0x'+q[i].toString('hex').replace(/(^0*)/g,""));
+    }
+    let ssq = sq.join('&');
+
+    let KWQ = [ssPubs,ssI,ssw,ssq].join('+');
     return KWQ;
 }
 async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, ringPubKs, value, ota) {
-
-    let M = generateHashforRing(address.slice(2), value);// M = hash(rawTx). we need determine which item join the hash. ethUtil.otaHash??
-	console.log("M", M);
-	console.log("otaSk", otaSk);
-	console.log("otaPubK", otaPubK);
-	console.log("ringPubKs", ringPubKs);
+    let M = new Buffer(address,'hex');
     let ringArgs = ethUtil.getRingSign(M, otaSk,otaPubK,ringPubKs);
-
-	if(!ethUtil.verifyRinSign(ringArgs)){
+    if(!ethUtil.verifyRinSign(ringArgs)){
         console.log("ring sign is wrong@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
-        for(let i=0; i<ringPubKs.length; i++){
-            console.log("pubkey ", i, " : ", ringPubKs[i].toString('hex'));
-        }
-        console.log("I: ", ringArgs.I.toString('hex'));
-        for(let i=0; i<ringPubKs.length; i++){
-            console.log("w ", i, " : ", ringArgs.w[i].toString('hex'));
-        }
-        for(let i=0; i<ringPubKs.length; i++){
-            console.log("q ", i, " : ", ringArgs.q[i].toString('hex'));
-        }
         return;
     }
+    for(let i=0; i<ringPubKs.length; i++){
+        console.log("pubkey ", i, " : ", ringPubKs[i].toString('hex'));
+    }
+    console.log("I: ", ringArgs.I.toString('hex'));
+    for(let i=0; i<ringPubKs.length; i++){
+        console.log("w ", i, " : ", ringArgs.w[i].toString('hex'));
+    }
+    for(let i=0; i<ringPubKs.length; i++){
+        console.log("q ", i, " : ", ringArgs.q[i].toString('hex'));
+    }
+    let KIWQ = generatePubkeyIWQforRing(ringArgs.PubKeys,ringArgs.I, ringArgs.w, ringArgs.q);
+    let all = contractCoinInstance.refundCoin.getData(KIWQ,value);
 
-    let OP = generateOrigPayloadforRing(value);
-    let KWQ = generatePubkeyWQforRing(ringArgs.PubKeys, ringArgs.w, ringArgs.q);
-    let IB = Buffer.alloc(1+65);
-    IB[0] = 65;
-    ringArgs.I.copy(IB,1);
-    let MH = Buffer.alloc(1+32);
-    MH[0] = 32;
-    M.copy(MH,1);
-    let all = Buffer.concat([OP, KWQ, IB, MH]);
-
-    var serial = '0x' + web3.eth.getTransactionCount('0x'+address).toString(16);
-
+    var serial = '0x' + web3.eth.getTransactionCount(address).toString(16);
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x4a817c800',
-        gasLimit: '0x60000',
+        gasPrice: '0x6fc23ac00',
+        gasLimit: '0xf4240',
         to: contractInstanceAddress,//contract address
         value: '0x00',
         data: all
@@ -150,13 +115,9 @@ async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, rin
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
     console.log("serializeTx:" + serializedTx.toString('hex'));
     console.log('tx hash:'+hash);
-
-		wanchainLog('waiting for... ', config.consoleColor.COLOR_FgGreen);
-
-		let receipt = await getTransactionReceipt(web3, hash, ota);
-		console.log('receipt: ', receipt);
+    let receipt = await getTransactionReceipt(web3, hash, ota);
+    console.log(receipt);
 }
-
 
 async function testRefund(web3,ethUtil, Tx, ota, value, privKeyA, privKeyB, address) {
 
@@ -169,6 +130,7 @@ async function testRefund(web3,ethUtil, Tx, ota, value, privKeyA, privKeyB, addr
 		getOTAMixSet.attachToObject(web3.eth);
 		getOTAMixSet.setRequestManager(web3.eth._requestManager);
 
+        console.log(ota);
     let otaSet = web3.eth.getOTAMixSet(ota, 3);
 
     let otaSetBuf = [];
