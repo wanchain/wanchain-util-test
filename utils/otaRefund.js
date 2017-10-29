@@ -112,8 +112,9 @@ async function otaRefund(web3,ethUtil, Tx,address, privKeyA, otaSk, otaPubK, rin
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
     // console.log("serializeTx:" + serializedTx.toString('hex'));
     console.log('tx hash:'+hash);
+		wanchainLog('waiting for a moment... ', config.consoleColor.COLOR_FgRed);
     let receipt = await getTransactionReceipt(web3, hash, ota);
-    wanchainLog('receipt: ' + receipt, config.consoleColor.COLOR_FgGreen);
+    wanchainLog(receipt, config.consoleColor.COLOR_FgGreen);
 }
 
 async function testRefund(web3,ethUtil, Tx, ota, value, privKeyA, privKeyB, address) {
