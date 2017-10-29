@@ -1,14 +1,14 @@
 const fs = require('fs');
-var keythereum = require("keythereum");
-var ethUtil = require('wanchain-util').ethereumUtil;
-var Tx = require('wanchain-util').ethereumTx;
+const keythereum = require("keythereum");
+const ethUtil = require('wanchain-util').ethereumUtil;
+const Tx = require('wanchain-util').ethereumTx;
 
-var config = require('./config');
+const config = require('./config');
 
-var checkBanlance = require('./utils/promptFunc/checkBanlance');
-var A2B = require('./utils/A2B');
-var A2OTA = require('./utils/A2OTA');
-var OTA2B = require('./utils/OTA2B');
+const checkBanlance = require('./utils/promptFunc/checkBanlance');
+const A2B = require('./utils/A2B');
+const A2OTA = require('./utils/A2OTA');
+const OTA2B = require('./utils/OTA2B');
 
 
 function wanWalletTransaction(prompt, web3, wanchainLog) {
@@ -35,7 +35,6 @@ function wanWalletTransaction(prompt, web3, wanchainLog) {
 				wanchainLog('You choosed 2(Privacy Transaction)', config.consoleColor.COLOR_FgYellow);
 
 				wanchainLog('Input your keystore file name: ', config.consoleColor.COLOR_FgGreen);
-
 				prompt.get(require('./utils/schema/mykeystore'), function (err, result) {
 					try {
 						var filename = "./utils/keystore/" + result.OrdinaryKeystore + ".json";
