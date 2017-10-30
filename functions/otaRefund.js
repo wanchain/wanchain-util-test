@@ -53,7 +53,7 @@ function OTA2B(prompt, web3, keythereum, Tx, ethUtil, keystoreStr, wanchainLog) 
 			let address = keystore.address;
 			let waddress = keystore.waddress;
 
-			wanchainLog('Perfect! Now your address had unlocked, would you want to send transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
+			wanchainLog('Your wallet has been unlocked. Would you want to send a transaction?', config.consoleColor.COLOR_FgGreen);
 
 			prompt.get(require('../utils/schema/isTransaction'), function (err, result) {
 				var theState = result.state.toLowerCase();

@@ -118,7 +118,7 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 	let contractCoinSC = web3.eth.contract(coinSCDefinition);
 	let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 	let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
-	console.log("otaDestAddress: ",otaDestAddress);
+	// console.log("otaDestAddress: ",otaDestAddress);
 	var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
 	var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
 	var rawTx = {
@@ -130,14 +130,14 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 		value: value,
 		data: payload
 	};
-	console.log("payload: " + rawTx.data);
+	// console.log("payload: " + rawTx.data);
 
 	var tx = new Tx(rawTx);
 	tx.sign(privateKey);
 	var serializedTx = tx.serialize();
 	let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
 
-	wanchainLog('serializeTx: ' + serializedTx.toString('hex'), config.consoleColor.COLOR_FgGreen);
+	// wanchainLog('serializeTx: ' + serializedTx.toString('hex'), config.consoleColor.COLOR_FgGreen);
 	wanchainLog('tx hash: ' + hash, config.consoleColor.COLOR_FgRed);
 
 	wanchainLog('waiting for... ', config.consoleColor.COLOR_FgGreen);
@@ -154,5 +154,5 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 
 	wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
 
-	wanchainLog('You have finished a transaction with privacy protection.You could check receiver\'s OTA balance by node otabalance.', config.consoleColor.COLOR_FgGreen);
+	wanchainLog('You have finished a transaction with privacy protection.You could check receiver\'s OTA balance by node otabalance.', config.consoleColor.COLOR_FgYellow);
 }

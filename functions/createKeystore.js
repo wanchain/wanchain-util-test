@@ -108,7 +108,7 @@ function createKeystore(password, fileName, wanchainLog) {
 
 		fs.writeFileSync(filepath, JSON.stringify(result));
 		wanchainLog('\naddress: ' + data.address + '\nwaddress: ' + data.waddress + '\npassword: ' + password + '\nfilename: ' + fileName, '\x1b[32m');
-		console.log('the keystore file has been created successful!');
+		wanchainLog('the keystore file has been created successful!', '\x1b[33m');
 		return result;
 	}
 }
