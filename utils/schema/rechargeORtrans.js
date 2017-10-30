@@ -5,7 +5,7 @@ var rechargeORtransSchema = {
 		rechargeORtrans: {
 			pattern: /^1$|^2$/,
 			message: 'consist of numbers and letters.',
-			description: colors.magenta("input keystore file name(without file format)"),
+			description: colors.magenta("Input: "),
 			required: true
 		}
 	}

@@ -5,7 +5,7 @@ var keyPasswordSchema = {
 		keyPassword: {
 			pattern: '[^\u4e00-\u9fa5]+',
 			message: "the password is invalid",
-			description: colors.magenta("input keystore's password"),
+			description: colors.magenta("Input password: "),
 			required: true
 		}
 	}

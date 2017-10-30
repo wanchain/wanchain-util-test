@@ -16,6 +16,7 @@ prompt.start();
 prompt.message = colors.blue("wanWallet");
 prompt.delimiter = colors.green("$");
 
+wanchainLog("Input address", config.consoleColor.COLOR_FgGreen);
 prompt.get(require('../utils/schema/balanceSchema'), function (err, result) {
 	const weiToEth = checkBanlance(web3, result.balance);
 	wanchainLog(weiToEth.toString() + ' eth', config.consoleColor.COLOR_FgGreen);

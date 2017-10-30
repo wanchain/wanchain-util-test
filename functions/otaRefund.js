@@ -51,6 +51,7 @@ function OTA2B(prompt, web3, keythereum, Tx, ethUtil, keystoreStr, wanchainLog) 
 			let privKeyA = keythereum.recover(result.keyPassword, keyAObj);
 			let privKeyB = keythereum.recover(result.keyPassword, keyBObj);
 			let address = keystore.address;
+			let waddress = keystore.waddress;
 
 			wanchainLog('Perfect! Now your address had unlocked, would you want to send transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
 
@@ -61,7 +62,16 @@ function OTA2B(prompt, web3, keythereum, Tx, ethUtil, keystoreStr, wanchainLog) 
 
 						try {
 							let otaDataStr = fs.readFileSync("./otaData/otaData.txt","utf8");
-							let otaData = otaDataStr.split('\n');
+							let otaDataTotal = otaDataStr.split('\n');
+
+							let otaData = [];
+							for (let i=0; i<otaDataTotal.length; i++) {
+								if (otaDataTotal[i].length >0) {
+									if(JSON.parse(otaDataTotal[i]).waddress === waddress) {
+										otaData.push(otaDataTotal[i])
+									}
+								}
+							}
 
 							try {
 								let otaDataStateStr = fs.readFileSync("./otaData/otaDataState.txt","utf8");

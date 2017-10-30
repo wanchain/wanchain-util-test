@@ -59,7 +59,7 @@ typings/
 
 test/
 .idea/
-otaData.txt
-otaDataState.txt
-testkeystore.json
-testkeystore2.json
+*.txt
+*.txt
+*.json
+

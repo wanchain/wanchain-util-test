@@ -5,7 +5,7 @@ var ordinaryValueSchema = {
 		value: {
 			pattern: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
 			message: "value invalid!",
-			description: colors.magenta("input value"),
+			description: colors.magenta("Input: "),
 			required: true
 		}
 	}

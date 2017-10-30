@@ -27,7 +27,7 @@ prompt.get(require('../utils/schema/mykeystore'), function (err, result) {
 	var filename = result.OrdinaryKeystore;
 	prompt.get(require('../utils/schema/keyPassword'), function (err, result) {
 		var password = result.keyPassword;
-		wanchainLog('Please keep your file name, password and Address in mind', config.consoleColor.COLOR_FgRed);
+		wanchainLog('Please copy your file name, passord and addresses which would be used later', config.consoleColor.COLOR_FgRed);
 		createKeystore(password, filename, wanchainLog);
 	})
 });
@@ -108,7 +108,7 @@ function createKeystore(password, fileName, wanchainLog) {
 
 		fs.writeFileSync(filepath, JSON.stringify(result));
 		wanchainLog('\naddress: ' + data.address + '\nwaddress: ' + data.waddress + '\npassword: ' + password + '\nfilename: ' + fileName, '\x1b[32m');
-		console.log('the keystore file has create success!');
+		console.log('the keystore file has been created successful!');
 		return result;
 	}
 }

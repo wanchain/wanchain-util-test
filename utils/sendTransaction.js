@@ -46,6 +46,7 @@ async function sendTransaction(web3, Tx, receiver_address,sender_address, privKe
 
 	let receipt = await getTransactionReceipt(web3, hash);
 	console.log('receipt: ', receipt);
+	wanchainLog('You have finished a transaction with ordinary protection.', '\x1b[32m');
 }
 
 module.exports = sendTransaction;

@@ -36,7 +36,7 @@ function A2B(prompt, web3, keythereum, Tx, keystoreStr, wanchainLog) {
 	let keystore = JSON.parse(keystoreStr)[1];
 	console.log('you keystore: ', keystore);
 
-	wanchainLog('Now to unlock your wallet, input your password', config.consoleColor.COLOR_FgGreen);
+	wanchainLog('Pls input your password to unlock your wallet', config.consoleColor.COLOR_FgGreen);
 	prompt.get(require('../utils/schema/keyPassword'), function (err, result) {
 		wanchainLog('waiting for unlock wallet....', config.consoleColor.COLOR_FgRed);
 
@@ -51,18 +51,18 @@ function A2B(prompt, web3, keythereum, Tx, keystoreStr, wanchainLog) {
 			if (weiToEth === '0') {
 				wanchainLog('the address balance is 0 eth, pls recharge first.', config.consoleColor.COLOR_FgRed);
 			} else {
-				wanchainLog('Perfect! Now your address had unlocked, would you want to send transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
+				wanchainLog('Your wallet has been unlocked. Would you want to send a transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
 
 				prompt.get(require('../utils/schema/isTransaction'), function (err, result) {
 					const theState = result.state.toLowerCase();
 					switch (theState) {
 						case 'y':
-							wanchainLog('input receiver address', config.consoleColor.COLOR_FgGreen);
+							wanchainLog('Input receiver\'s address', config.consoleColor.COLOR_FgGreen);
 
 							prompt.get(require('../utils/schema/ordinaryAddr'), function (err, result) {
 								const receiver = result.address;
 
-								wanchainLog('input sender value(eth): ', config.consoleColor.COLOR_FgGreen);
+								wanchainLog('Input value(eth): ', config.consoleColor.COLOR_FgGreen);
 								prompt.get(require('../utils/schema/theValue'), function (err, result) {
 									const strSendValueInWei = web3.toWei(result.value);
 									const bnSendValueInWei = new web3.BigNumber(strSendValueInWei);

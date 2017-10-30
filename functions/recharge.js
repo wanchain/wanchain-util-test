@@ -16,6 +16,7 @@ prompt.start();
 prompt.message = colors.blue("wanWallet");
 prompt.delimiter = colors.green("$");
 
+wanchainLog("Input address", config.consoleColor.COLOR_FgGreen);
 prompt.get(require('../utils/schema/balanceSchema'), function (err, result) {
 	const cmdStr = 'curl -d "userAddr=' + result.balance + '" http://121.42.8.74:3000/faucet';
 	// console.log(cmdStr);
@@ -23,10 +24,10 @@ prompt.get(require('../utils/schema/balanceSchema'), function (err, result) {
 	exec(cmdStr, function(err,stdout,stderr){
 
 		if(err) {
-			wanchainLog('get recharge error: '+stderr, config.consoleColor.COLOR_FgRed);
+			wanchainLog('Get recharge error: '+stderr, config.consoleColor.COLOR_FgRed);
 
 		} else {
-			wanchainLog('recharge success!!! '+stdout, config.consoleColor.COLOR_FgGreen);
+			wanchainLog('Recharge successful！ '+stdout, config.consoleColor.COLOR_FgGreen);
 
 		}
 

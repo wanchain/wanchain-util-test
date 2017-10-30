@@ -5,7 +5,7 @@ var ordinaryStateSchema = {
 		state: {
 			pattern: /^y$|^Y$|^n$|^N$/,
 			message: "you should input y(Y) or n(N)",
-			description: colors.magenta("Are you cant to transaction?"),
+			description: colors.magenta("Input: "),
 			required: true
 		}
 	}

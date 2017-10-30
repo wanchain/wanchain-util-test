@@ -35,7 +35,7 @@ function A2OTA(prompt, web3, keythereum, Tx, ethUtil, keystoreStr, wanchainLog) 
 	let keystore = JSON.parse(keystoreStr)[1];
 	console.log('you keystore: ', keystore);
 
-	wanchainLog('Now to unlock your wallet, input your password', config.consoleColor.COLOR_FgGreen);
+	wanchainLog('Pls input your password to unlock your wallet', config.consoleColor.COLOR_FgGreen);
 	prompt.get(require('../utils/schema/keyPassword'), function (err, result) {
 		wanchainLog('waiting for unlock wallet....', config.consoleColor.COLOR_FgRed);
 
@@ -50,20 +50,20 @@ function A2OTA(prompt, web3, keythereum, Tx, ethUtil, keystoreStr, wanchainLog) 
 			if (weiToEth === '0') {
 				wanchainLog('the address balance is 0 eth, pls recharge first.', config.consoleColor.COLOR_FgRed);
 			} else {
-				wanchainLog('Perfect! Now your address had unlocked, would you want to send transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
+				wanchainLog('Your wallet has been unlocked. Would you want to send a transaction? (y[Y]/n[N])', config.consoleColor.COLOR_FgGreen);
 
 				prompt.get(require('../utils/schema/isTransaction'), function (err, result) {
 					const theState = result.state.toLowerCase();
 					switch (theState) {
 						case 'y':
-							wanchainLog('input receiver waddress', config.consoleColor.COLOR_FgGreen);
+							wanchainLog('Input receiver\'s waddress', config.consoleColor.COLOR_FgGreen);
 
 							prompt.get(require('../utils/schema/privacyAddr'), function (err, result) {
 								const to_waddress = result.waddress;
 
 								const contractInstanceAddress = config.contractInstanceAddress;
 
-								wanchainLog('input sender value(eth): ', config.consoleColor.COLOR_FgGreen);
+								wanchainLog('Input value(eth): ', config.consoleColor.COLOR_FgGreen);
 								prompt.get(require('../utils/schema/theValue'), function (err, result) {
 									const strSendValueInWei = web3.toWei(result.value);
 									const bnSendValueInWei = new web3.BigNumber(strSendValueInWei);
@@ -115,7 +115,6 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 
 	//let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
 	let coinSCDefinition = wanUtil.coinSCAbi;
-	var contractInstanceAddress = config.contractInstanceAddress;
 	let contractCoinSC = web3.eth.contract(coinSCDefinition);
 	let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 	let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
@@ -146,14 +145,14 @@ async function preScTransfer(web3, Tx, ethUtil, fromsk,fromaddress, toWaddr, con
 	let receipt = await getTransactionReceipt(web3, hash);
 
 	value = inputValue * 10 ** 18;
-	var data = {ota: otaDestAddress.split('x')[1], value: value.toString(), state: 'Undo'};
+	let data = {waddress: toWaddr, ota: otaDestAddress.split('x')[1], value: value.toString(), state: 'Undo'};
 	console.log('value: ', inputValue * 10**18);
 	console.log('otaDestAddress: ', otaDestAddress);
 
-	var log = fs.createWriteStream('./otaData/otaData.txt', {'flags': 'a'});
+	let log = fs.createWriteStream('./otaData/otaData.txt', {'flags': 'a'});
 	log.end(JSON.stringify(data) + '\n');
 
 	wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
 
-	wanchainLog('You had finish a privacy transaction, go to listenOTA get "ota" and "value" then run wanWalletTest.js and choice 3(OTA Transaction) ', config.consoleColor.COLOR_FgGreen);
+	wanchainLog('You have finished a transaction with privacy protection.You could check receiver\'s OTA balance by node otabalance.', config.consoleColor.COLOR_FgGreen);
 }
