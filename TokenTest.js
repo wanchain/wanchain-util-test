@@ -84,7 +84,7 @@ async function deployContract(contractName) {
 
     var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
-        Txtype: '0x00',
+        Txtype: '0x01',
         nonce: serial,
         gasPrice: '0x6fc23ac00',
         gasLimit: '0xf4240',
@@ -244,8 +244,8 @@ async function buyStamp(privateKey,fromaddress, toWaddr, value){
 
 async function main(){
     await deployContract("ERC20");
-    var TokenAddress = fs.readFileSync("ERC20.addr","utf8");
-    var TokenInstance = privacyContract.at(TokenAddress);
+    TokenAddress = fs.readFileSync("ERC20.addr","utf8");
+    TokenInstance = privacyContract.at(TokenAddress);
     await testTokenInit();
     await buyStamp(privKeyA,myAddr, keystore.waddress,  1000000000000000000);
     await testTokenSend();
