@@ -26,12 +26,12 @@ var preStampAddress = config.contractStampAddress;
 let contractStampSC = web3.eth.contract(wanUtil.stampSCAbi);
 let contractStampInstance = contractStampSC.at(preStampAddress);
 
-var TokenAddress = fs.readFileSync("ERC20.addr","utf8");
 var content = fs.readFileSync(path.join("./sol", "ERC20.sol"), 'utf8');
 var compiled = solc.compile(content, 1);
 var privacyContract = web3.eth.contract(JSON.parse(compiled.contracts[':ERC20'].interface));
-var TokenInstance = privacyContract.at(TokenAddress);
 
+let TokenInstance = 0;
+let TokenAddress = 0x00;
 
 let keyPassword = "wanglu";
 let keystoreStr = fs.readFileSync("./myKey.json","utf8");
@@ -244,6 +244,8 @@ async function buyStamp(privateKey,fromaddress, toWaddr, value){
 
 async function main(){
     await deployContract("ERC20");
+    var TokenAddress = fs.readFileSync("ERC20.addr","utf8");
+    var TokenInstance = privacyContract.at(TokenAddress);
     await testTokenInit();
     await buyStamp(privKeyA,myAddr, keystore.waddress,  1000000000000000000);
     await testTokenSend();
