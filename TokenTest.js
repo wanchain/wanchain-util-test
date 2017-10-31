@@ -40,9 +40,13 @@ let keyAObj = {version:keystore.version, crypto:keystore.crypto};
 let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
 var privKeyA = keythereum.recover(keyPassword, keyAObj);
 var privKeyB = keythereum.recover(keyPassword, keyBObj);
+let privateKey = privKeyA;
 let myWaddr = keystore.waddress;
+let myAddr = '0x'+keystore.address;
 let PubKey = ethUtil.recoverPubkeyFromWaddress(myWaddr);
 let pubKeyA = PubKey.A;
+
+
 let stamp = "";
 
 function getTransactionReceipt(txHash)
@@ -69,6 +73,36 @@ function getTransactionReceipt(txHash)
     });
 }
 
+async function deployContract(contractName) {
+    var content = fs.readFileSync(path.join(__dirname+'/sol/', contractName+".sol"), 'utf8');
+    var compiled = solc.compile(content, 1);
+    var myTestContract = web3.eth.contract(JSON.parse(compiled.contracts[':'+contractName].interface));
+
+    var constructorInputs = [];
+    constructorInputs.push({ data: compiled.contracts[':'+contractName].bytecode});
+    var txData = myTestContract.new.getData.apply(null, constructorInputs);
+
+    var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
+    var rawTx = {
+        Txtype: '0x00',
+        nonce: serial,
+        gasPrice: '0x6fc23ac00',
+        gasLimit: '0xf4240',
+        to: '',
+        value: '0x00',
+        from: myAddr,
+        data: '0x' + txData
+    };
+    var tx = new Tx(rawTx);
+    tx.sign(privateKey);
+    var serializedTx = tx.serialize();
+    console.log("serializedTx:" + serializedTx.toString('hex'));
+    let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
+    let receipt = await getTransactionReceipt(hash);
+    console.log(receipt);
+    console.log("contractAddress:"+receipt.contractAddress);
+    fs.writeFileSync(contractName+".addr", receipt.contractAddress);
+}
 
 /* set pubkey, w, q */
 function generatePubkeyIWQforRing(Pubs, I, w, q){
@@ -129,7 +163,7 @@ async function testTokenSend() {
     let glueContract = glueContractDef.at("0x0000000000000000000000000000000000000000");
     let combinedData = glueContract.combine.getData(KIWQ, cxtInterfaceCallData);
     //let all = TokenInstance.
-    var serial = '0x' + web3.eth.getTransactionCount('0x'+keystore.address).toString(16);
+    var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
         Txtype: '0x06',
         nonce: serial,
@@ -155,9 +189,9 @@ async function testTokenSend() {
 
 
 async function testTokenInit() {
-    let mintdata = TokenInstance.initPrivacyAsset.getData('0x'+keystore.address, keystore.waddress, "0xf4240");
+    let mintdata = TokenInstance.initPrivacyAsset.getData(myAddr, keystore.waddress, "0xf4240");
 
-    var serial = '0x' + web3.eth.getTransactionCount('0x'+keystore.address).toString(16);
+    var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
@@ -177,13 +211,13 @@ async function testTokenInit() {
     console.log('tx hash:'+hash);
     let receipt = await getTransactionReceipt(hash);
     console.log(receipt);
-    console.log("Token balance of 0x",keystore.address, " is ", TokenInstance.otabalanceOf('0x'+keystore.address).toString(), "key is ", TokenInstance.otaKey('0x'+keystore.address));
+    console.log("Token balance of ",myAddr, " is ", TokenInstance.otabalanceOf(myAddr).toString(), "key is ", TokenInstance.otaKey(myAddr));
 }
 async function buyStamp(privateKey,fromaddress, toWaddr, value){
     stamp = ethUtil.generateOTAWaddress(toWaddr).toLowerCase();
     console.log('stamp: ', stamp);
     let payload = contractStampInstance.buyStamp.getData(stamp, value);
-    var serial = '0x' + web3.eth.getTransactionCount('0x'+fromaddress).toString(16);
+    var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
     var rawTx = {
         Txtype: '0x0',
         nonce: serial,
@@ -209,9 +243,9 @@ async function buyStamp(privateKey,fromaddress, toWaddr, value){
 }
 
 async function main(){
-    await buyStamp(privKeyA,keystore.address, keystore.waddress,  1000000000000000000);
-    //stamp = "0x022fc442e14425383f5ed45effcd46fc7c3e462392ae00556a335c5d3ada66a819028dbf948558852a7e5b8575ca0058967cc10d6b869e97b788b517afac0de412c3";
+    await deployContract("ERC20");
     await testTokenInit();
+    await buyStamp(privKeyA,myAddr, keystore.waddress,  1000000000000000000);
     await testTokenSend();
 }
 
