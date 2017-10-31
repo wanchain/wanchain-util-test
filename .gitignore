@@ -61,6 +61,5 @@ test/
 .idea/
 *.txt
 *.txt
-*.json
 *.addr
 
