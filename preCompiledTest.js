@@ -11,20 +11,36 @@ var ethUtil = wanUtil.ethereumUtil;
 var Tx = wanUtil.ethereumTx;
 let coinSCDefinition = wanUtil.coinSCAbi;
 var solc = require('solc');
+var keythereum = require("keythereum");
 
 var config = require('./config');
 var wanchainLog = require('./utils/wanchainLog');
 
 var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
+web3.wan = new wanUtil.web3Wan(web3);
 
 var contractInstanceAddress = config.contractInstanceAddress;
 let contractCoinSC = web3.eth.contract(coinSCDefinition);
 let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 
 
-var from_sk = config.from_sk;
-var from_address = config.from_address;
-var to_waddress = config.to_waddress;
+let keyPassword = "wanglu";
+let keystoreStr = fs.readFileSync("./myKey.json","utf8");
+let keystore = JSON.parse(keystoreStr);
+let keyAObj = {version:keystore.version, crypto:keystore.crypto};
+let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
+var privKeyA = keythereum.recover(keyPassword, keyAObj);
+var privKeyB = keythereum.recover(keyPassword, keyBObj);
+let privateKey = privKeyA;
+let myWaddr = keystore.waddress;
+let myAddr = '0x'+keystore.address;
+let PubKey = ethUtil.recoverPubkeyFromWaddress(myWaddr);
+let pubKeyA = PubKey.A;
+
+
+
+var from_address = myAddr;
+var to_waddress = myWaddr;
 var value = config.transferValue;
 
 function getTransactionReceipt(txHash)
@@ -51,13 +67,11 @@ function getTransactionReceipt(txHash)
 }
 
 
-async function preScTransfer(fromsk,fromaddress, toWaddr, value){
+async function preScTransfer(toWaddr, value){
     var otaDestAddress = ethUtil.generateOTAWaddress(toWaddr).toLowerCase();
     console.log('otaDestAddress: ', otaDestAddress);
-    //let payload = ethUtil.getDataForSendWanCoin(otaDestAddress);
     let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
-    var privateKey = new Buffer(fromsk, 'hex');//from.so_privatekey
-    var serial = '0x' + web3.eth.getTransactionCount(fromaddress).toString(16);
+    var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
         Txtype: '0x0',
         nonce: serial,
@@ -81,7 +95,7 @@ async function preScTransfer(fromsk,fromaddress, toWaddr, value){
 		wanchainLog('receipt: ' + JSON.stringify(receipt), config.consoleColor.COLOR_FgGreen);
 }
 async function main(){
-    await preScTransfer(from_sk,from_address, to_waddress,  value);
+    await preScTransfer(to_waddress,  value);
 }
 
 main();

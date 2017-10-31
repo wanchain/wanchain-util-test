@@ -9,9 +9,9 @@ var Tx = require('wanchain-util').ethereumTx;
 var ethUtil = require('wanchain-util').ethereumUtil;
 //ethUtil.crypto = require('crypto');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var config = require('./config');
+var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 
-var fs = require('fs');
 var srcDir = typeof(__dirname) == 'undefined' ? '' : __dirname;
 
 let contractName = process.argv[2];
@@ -41,9 +41,7 @@ var config_pubkey = '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e';
 
 
 
-let globalHash = "";
 	var constructorInputs = [];
-
 	constructorInputs.push({ data: compiled.contracts[':'+contractName].bytecode});
 	var txData = myTestContract.new.getData.apply(null, constructorInputs);
 
@@ -71,13 +69,12 @@ let globalHash = "";
 	web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash){
         if(!err){
             console.log('tx hash:'+hash);
-            globalHash = hash;
             let filter = web3.eth.filter('latest');
             filter.watch(function(err,hash){
                 if(err ){
                     console.log("err:"+err);
                 }else{
-                    let receipt = web3.eth.getTransactionReceipt(globalHash);
+                    let receipt = web3.eth.getTransactionReceipt(hash);
                     if(receipt){
                         filter.stopWatching();
                         console.log("contractAddress:"+receipt.contractAddress);
