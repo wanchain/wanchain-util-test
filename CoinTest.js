@@ -26,7 +26,7 @@ let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 
 
 let keyPassword = "wanglu";
-let keystoreStr = fs.readFileSync("./myKey.json","utf8");
+let keystoreStr = fs.readFileSync("./keys/myKey.json","utf8");
 let keystore = JSON.parse(keystoreStr);
 let keyAObj = {version:keystore.version, crypto:keystore.crypto};
 let keyBObj = {version:keystore.version, crypto:keystore.crypto2};
