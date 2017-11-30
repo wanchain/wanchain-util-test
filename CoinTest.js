@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict'
+
 const fs = require('fs');
 const path = require('path');
 const Web3 = require("web3");
@@ -7,10 +9,10 @@ const BN = require('bn.js')
 const secp256k1 = require('secp256k1');
 const SolidityCoder = require('web3/lib/solidity/coder');
 
-var keythereum = require("keythereum");
-let wanUtil = require('wanchain-util');
-var ethUtil = wanUtil.ethereumUtil;
-var Tx = wanUtil.ethereumTx;
+const keythereum = require("keythereum");
+const wanUtil = require('wanchain-util');
+
+var Tx = wanUtil.wanchainTx;
 let coinSCDefinition = wanUtil.coinSCAbi;
 
 var config = require('./config');
@@ -19,7 +21,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider( config.host + ":8545"));
 var wanchainLog = require('./utils/wanchainLog');
 
 web3.wan = new wanUtil.web3Wan(web3);
-let fhs_buyCoinNote = ethUtil.sha3('buyCoinNote(string,uint256)', 256).slice(0,4).toString('hex');
+let fhs_buyCoinNote = wanUtil.sha3('buyCoinNote(string,uint256)', 256).slice(0,4).toString('hex');
 var contractInstanceAddress = config.contractInstanceAddress;
 let contractCoinSC = web3.eth.contract(coinSCDefinition);
 let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
@@ -35,7 +37,7 @@ var privKeyB = keythereum.recover(keyPassword, keyBObj);
 let privateKey = privKeyA;
 let myWaddr = keystore.waddress;
 let myAddr = '0x'+keystore.address;
-let PubKey = ethUtil.recoverPubkeyFromWaddress(myWaddr);
+let PubKey = wanUtil.recoverPubkeyFromWaddress(myWaddr);
 let pubKeyA = PubKey.A;
 
 
@@ -78,6 +80,7 @@ async function preScTransfer(otaDestAddress, value){
     console.log("payload: " + rawTx.data);
 
     var tx = new Tx(rawTx);
+    console.log("TX:", tx);
     tx.sign(privateKey);
     var serializedTx = tx.serialize();
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
@@ -114,8 +117,8 @@ function generatePubkeyIWQforRing(Pubs, I, w, q){
 }
 async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
     let M = new Buffer(keystore.address,'hex');
-    let ringArgs = ethUtil.getRingSign(M, otaSk,otaPubK,ringPubKs);
-    if(!ethUtil.verifyRinSign(ringArgs)){
+    let ringArgs = wanUtil.getRingSign(M, otaSk,otaPubK,ringPubKs);
+    if(!wanUtil.verifyRinSign(ringArgs)){
         console.log("ring sign is wrong@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         return;
     }
@@ -193,10 +196,10 @@ function handleTransaction(tx)
             let paras = parseContractMethodPara(inputPara, wanUtil.coinSCAbi, "buyCoinNote");
             let value = paras.Value;
             let ota = paras.OtaAddr;
-            let otaPub = ethUtil.recoverPubkeyFromWaddress(ota);
+            let otaPub = wanUtil.recoverPubkeyFromWaddress(ota);
             let otaA1 = otaPub.A;
             let otaS1 = otaPub.B;
-            let A1 = ethUtil.generateA1(privKeyB, pubKeyA, otaS1);
+            let A1 = wanUtil.generateA1(privKeyB, pubKeyA, otaS1);
 
             if(A1.toString('hex') === otaA1.toString('hex')){
 	              wanchainLog('======START======', config.consoleColor.COLOR_FgGreen);
@@ -211,8 +214,8 @@ function handleTransaction(tx)
                     let rpcu = secp256k1.publicKeyConvert(rpkc, false);
                     otaSetBuf.push(rpcu);
                 }
-                let otaSk = ethUtil.computeWaddrPrivateKey(ota, privKeyA,privKeyB);
-                let otaPub = ethUtil.recoverPubkeyFromWaddress(ota);
+                let otaSk = wanUtil.computeWaddrPrivateKey(ota, privKeyA,privKeyB);
+                let otaPub = wanUtil.recoverPubkeyFromWaddress(ota);
                 await otaRefund(otaSk,otaPub.A,otaSetBuf,value);
                 console.log("New balance of",keystore.address," is: ",web3.eth.getBalance(keystore.address).toString());
 
@@ -256,20 +259,21 @@ function filterTest(){
 //syncBlockHandler(11953);
 //let rawOta = '76ee5a82703e657f1ca5a2cd59ed26c4a1f823d9ef7f51fb5de5d0dea9368a7658b370194a19e4c08403650b4bad2941c198600babf0b9ebd3ac4f57021991d4205b582b9502a3c81e1f3db1c73a3d578b920402b5b54da5518e9c0330b7ca94d7378fb1fb9c0a1f9db2858734eb721d7d2607b831f1f82f766b9fc509f24f6f';
 async function main() {
-    var otaDestAddress = ethUtil.generateOTAWaddress(myWaddr).toLowerCase();
+    var otaDestAddress = wanUtil.generateOTAWaddress(myWaddr).toLowerCase();
     console.log('otaDestAddress: ', otaDestAddress);
     await preScTransfer(otaDestAddress, config.transferValue);
     // checkOTAddress;
     let otaSet = web3.wan.getOTAMixSet(otaDestAddress, 3);
+    console.log("otaSet:",otaSet);
     let otaSetBuf = [];
     for(let i=0; i<otaSet.length; i++){
-        let rpkc = new Buffer(otaSet[i].slice(0,66),'hex');
+        let rpkc = new Buffer(otaSet[i].slice(2,68),'hex');
         let rpcu = secp256k1.publicKeyConvert(rpkc, false);
         otaSetBuf.push(rpcu);
     }
     console.log("fetch  ota set: ",otaSet);
-    let otaSk = ethUtil.computeWaddrPrivateKey(otaDestAddress, privKeyA,privKeyB);
-    let otaPub = ethUtil.recoverPubkeyFromWaddress(otaDestAddress);
+    let otaSk = wanUtil.computeWaddrPrivateKey(otaDestAddress, privKeyA,privKeyB);
+    let otaPub = wanUtil.recoverPubkeyFromWaddress(otaDestAddress);
 
     console.log("Old balance of",myAddr," is: ",web3.eth.getBalance(myAddr).toString());
     await otaRefund(otaSk,otaPub.A,otaSetBuf,config.transferValue);

@@ -11,8 +11,7 @@ var solc = require('solc');
 
 var keythereum = require("keythereum");
 let wanUtil = require('wanchain-util');
-var ethUtil = wanUtil.ethereumUtil;
-var Tx = wanUtil.ethereumTx;
+var Tx = wanUtil.wanchainTx;
 let coinSCDefinition = wanUtil.coinSCAbi;
 
 var config = require('./config');
@@ -45,7 +44,7 @@ function parseKeystoreFile(filepath,keyPassword){
     keystore.privKeyA = keythereum.recover(keyPassword, keyAObj);
     keystore.privKeyB = keythereum.recover(keyPassword, keyBObj);
     keystore.address = '0x'+keystore.address;
-    let PubKey = ethUtil.recoverPubkeyFromWaddress(keystore.waddress);
+    let PubKey = wanUtil.recoverPubkeyFromWaddress(keystore.waddress);
     keystore.pubKeyA = PubKey.A;
     keystore.pubKeyB = PubKey.B;
     return keystore;
@@ -87,7 +86,7 @@ async function deployContract(contractName, myKey) {
     var rawTx = {
         Txtype: '0x01',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
+        gasPrice: '0x30d40',
         gasLimit: '0xf4240',
         to: '',
         value: '0x00',
@@ -133,22 +132,24 @@ function generatePubkeyIWQforRing(Pubs, I, w, q){
 //syncBlockHandler(11953);
 //let rawOta = '76ee5a82703e657f1ca5a2cd59ed26c4a1f823d9ef7f51fb5de5d0dea9368a7658b370194a19e4c08403650b4bad2941c198600babf0b9ebd3ac4f57021991d4205b582b9502a3c81e1f3db1c73a3d578b920402b5b54da5518e9c0330b7ca94d7378fb1fb9c0a1f9db2858734eb721d7d2607b831f1f82f766b9fc509f24f6f';
 async function testTokenSend(token_to_ota_addr, token_to_ota, stamp, stampHoderKeystore, tokenHoderKeystore) {
+    console.log("testTokenSend...");
     let cxtInterfaceCallData = TokenInstance.otatransfer.getData(token_to_ota_addr, token_to_ota, 888);
 
     let otaSet = web3.wan.getOTAMixSet(stamp, 3);
+    console.log("fetch  ota stamp set: ",otaSet);
+
     let otaSetBuf = [];
     for(let i=0; i<otaSet.length; i++){
-        let rpkc = new Buffer(otaSet[i].slice(0,66),'hex');
+        let rpkc = new Buffer(otaSet[i].slice(2,68),'hex');
         let rpcu = secp256k1.publicKeyConvert(rpkc, false);
         otaSetBuf.push(rpcu);
     }
 
-    console.log("fetch  ota stamp set: ",otaSet);
-    let otaSk = ethUtil.computeWaddrPrivateKey(stamp, stampHoderKeystore.privKeyA,stampHoderKeystore.privKeyB);
-    let otaPub = ethUtil.recoverPubkeyFromWaddress(stamp);
+    let otaSk = wanUtil.computeWaddrPrivateKey(stamp, stampHoderKeystore.privKeyA,stampHoderKeystore.privKeyB);
+    let otaPub = wanUtil.recoverPubkeyFromWaddress(stamp);
 
-    let ringArgs = ethUtil.getRingSign(new Buffer(tokenHoderKeystore.address.slice(2),'hex'), otaSk,otaPub.A,otaSetBuf);
-    if(!ethUtil.verifyRinSign(ringArgs)){
+    let ringArgs = wanUtil.getRingSign(new Buffer(tokenHoderKeystore.address.slice(2),'hex'), otaSk,otaPub.A,otaSetBuf);
+    if(!wanUtil.verifyRinSign(ringArgs)){
         console.log("ring sign is wrong@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         return;
     }
@@ -161,7 +162,7 @@ async function testTokenSend(token_to_ota_addr, token_to_ota, stamp, stampHoderK
     var rawTx = {
         Txtype: '0x06',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
+        gasPrice: '0x30d40',
         gasLimit: '0xf4240',
         to: TokenAddress,
         value: '0x00',
@@ -178,7 +179,6 @@ async function testTokenSend(token_to_ota_addr, token_to_ota, stamp, stampHoderK
     let receipt = await getTransactionReceipt(hash);
     console.log(receipt);
     console.log("Token balance of ",token_to_ota_addr, " is ", TokenInstance.otabalanceOf(token_to_ota_addr).toString(), "key is ", TokenInstance.otaKey(token_to_ota_addr));
-
 }
 
 
@@ -189,7 +189,7 @@ async function testTokenInit(myKey) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
+        gasPrice: '0x30d40',
         gasLimit: '0xf4240',
         to: TokenAddress,
         value: '0x00',
@@ -198,6 +198,7 @@ async function testTokenInit(myKey) {
     console.log("payload: " + rawTx.data.toString('hex'));
 
     var tx = new Tx(rawTx);
+    console.log("TX:", tx);
     tx.sign(myKey.privKeyA);
     var serializedTx = tx.serialize();
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
@@ -205,7 +206,9 @@ async function testTokenInit(myKey) {
     console.log('tx hash:'+hash);
     let receipt = await getTransactionReceipt(hash);
     console.log(receipt);
-    console.log("Token balance of ",myKey.address, " is ", TokenInstance.otabalanceOf(myKey.address).toString(), "key is ", TokenInstance.otaKey(myKey.address));
+    console.log("Token balance of ",myKey.address, " is ");
+    console.log( TokenInstance.otabalanceOf(myKey.address).toString());
+    console.log("key is ", TokenInstance.otaKey(myKey.address));
 }
 async function buyStamp(myKey, stamp, value){
     let payload = contractStampInstance.buyStamp.getData(stamp, value);
@@ -213,7 +216,7 @@ async function buyStamp(myKey, stamp, value){
     var rawTx = {
         Txtype: '0x0',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
+        gasPrice: '0x30d40',
         gasLimit: '0xf4240',
         to: config.contractStampAddress,
         value: value,
@@ -236,39 +239,43 @@ async function buyStamp(myKey, stamp, value){
 
 async function main(){
     let myKey = parseKeystoreFile("./keys/myKey.json",keyPassword);
-    //await deployContract("ERC20", myKey);
-    TokenAddress = fs.readFileSync("ERC20.addr","utf8");
+    // await deployContract("ERC20", myKey);
+    //  TokenAddress = fs.readFileSync("ERC20.addr","utf8");
+    TokenAddress = "0x7c0ec9698764435c3ab795f5debb64ab590bed7a";
+
     TokenInstance = privacyContract.at(TokenAddress);
 
     await testTokenInit(myKey);
 
-    let stamp = ethUtil.generateOTAWaddress(myKey.waddress).toLowerCase();
-    await buyStamp(myKey, stamp,  10000000000000000);
+    let stamp = wanUtil.generateOTAWaddress(myKey.waddress).toLowerCase();
+    await buyStamp(myKey, stamp,  5000000000000000);
     console.log("stamp: ", stamp);
 
     let account2 = parseKeystoreFile("./keys/Account2.json",keyPassword);
-    let token_to_ota =  ethUtil.generateOTAWaddress(account2.waddress).toLowerCase();
-    let token_to_ota_a = ethUtil.recoverPubkeyFromWaddress(token_to_ota).A;
-    let token_to_ota_addr = "0x"+ethUtil.sha3(token_to_ota_a.slice(1)).slice(-20).toString('hex');
+    let token_to_ota =  wanUtil.generateOTAWaddress(account2.waddress).toLowerCase();
+    let token_to_ota_a = wanUtil.recoverPubkeyFromWaddress(token_to_ota).A;
+    let token_to_ota_addr = "0x"+wanUtil.sha3(token_to_ota_a.slice(1)).slice(-20).toString('hex');
     console.log("token_to_ota_addr:",  token_to_ota_addr);
     console.log("token_to_ota:",token_to_ota);
     await testTokenSend(token_to_ota_addr, token_to_ota, stamp, myKey, myKey);
 
     // the receiver send to another
-    let stamp2 = ethUtil.generateOTAWaddress(account2.waddress).toLowerCase();
-    await buyStamp(account2, stamp2,  10000000000000000);
+    let stamp2 = wanUtil.generateOTAWaddress(account2.waddress).toLowerCase();
+    await buyStamp(account2, stamp2,  5000000000000000);
     console.log("stamp2: ", stamp2);
 
     let account3 = parseKeystoreFile("./keys/Account3.json",keyPassword);
-    let token_to_ota3 =  ethUtil.generateOTAWaddress(account3.waddress).toLowerCase();
-    let token_to_ota_a3 = ethUtil.recoverPubkeyFromWaddress(token_to_ota3).A
-    let token_to_ota_addr3 = "0x"+ethUtil.sha3(token_to_ota_a3.slice(1)).slice(-20).toString('hex');
+    //let token_to_ota3 =  wanUtil.generateOTAWaddress(account3.waddress).toLowerCase();
+    let token_to_ota3 = account3.waddress;
+    let token_to_ota_a3 = wanUtil.recoverPubkeyFromWaddress(token_to_ota3).A;
+    let token_to_ota_addr3 = "0x"+wanUtil.sha3(token_to_ota_a3.slice(1)).slice(-20).toString('hex');
     console.log("token_to_ota_addr2:",  token_to_ota_addr3);
     console.log("token_to_ota2:",token_to_ota3);
     let otaKey = {};
 
     // caculate the private key of ota addr.
-    let privateKey = ethUtil.computeWaddrPrivateKey(TokenInstance.otaKey(token_to_ota_addr), account2.privKeyA, account2.privKeyB);
+    console.log(TokenInstance.otaKey(token_to_ota_addr));
+    let privateKey = wanUtil.computeWaddrPrivateKey(TokenInstance.otaKey(token_to_ota_addr).slice(2), account2.privKeyA, account2.privKeyB);
     otaKey.address =token_to_ota_addr;
     otaKey.privKeyA = privateKey;
     await testTokenSend(token_to_ota_addr3, token_to_ota3, stamp2, account2, otaKey);
