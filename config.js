@@ -1,8 +1,8 @@
 const config = {};
 
 // web3 parameter
-config.host = 'http://127.0.0.1'; // http://localhost
-//config.host = 'http://192.168.1.79'; // http://localhost
+//config.host = 'http://127.0.0.1'; // http://localhost
+config.host = 'http://192.168.1.85'; // http://localhost
 config.port = 8545;
 
 // Instance Address
