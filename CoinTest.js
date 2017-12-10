@@ -57,7 +57,7 @@ function getTransactionReceipt(txHash)
                     filter.stopWatching();
                     success(receipt);
                     return receipt;
-                }else if(blockAfter > 6){
+                }else if(blockAfter > 16){
                     fail("Get receipt timeout");
                 }
             }
@@ -69,10 +69,10 @@ async function preScTransfer(otaDestAddress, value){
     let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
     var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
-        Txtype: '0x0',
+        Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
-        gasLimit: '0xf4240',
+        gasPrice: '0x10',
+        gasLimit: '0xf4241',
         to: contractInstanceAddress,//contract address
         value: value,
         data: payload
@@ -80,7 +80,7 @@ async function preScTransfer(otaDestAddress, value){
     console.log("payload: " + rawTx.data);
 
     var tx = new Tx(rawTx);
-    console.log("TX:", tx);
+    console.log("TX:", rawTx);
     tx.sign(privateKey);
     var serializedTx = tx.serialize();
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
@@ -139,7 +139,7 @@ async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x6fc23ac00',
+        gasPrice: '0x10',
         gasLimit: '0xf4240',
         to: contractInstanceAddress,//contract address
         value: '0x00',
@@ -206,7 +206,7 @@ function handleTransaction(tx)
 
 	              console.log("received a privacy transaction to me: ",ota);
                 console.log("the value is: ", value.toString());
-                let otaSet = web3.wan.getOTAMixSet(ota, 3);
+                let otaSet = web3.wan.getOTAMixSet(ota, 8);
                 console.log("fetch  ota set:",otaSet);
                 let otaSetBuf = [];
                 for(let i=0; i<otaSet.length; i++){
@@ -263,7 +263,7 @@ async function main() {
     console.log('otaDestAddress: ', otaDestAddress);
     await preScTransfer(otaDestAddress, config.transferValue);
     // checkOTAddress;
-    let otaSet = web3.wan.getOTAMixSet(otaDestAddress, 3);
+    let otaSet = web3.wan.getOTAMixSet(otaDestAddress, 8);
     console.log("otaSet:",otaSet);
     let otaSetBuf = [];
     for(let i=0; i<otaSet.length; i++){

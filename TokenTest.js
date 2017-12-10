@@ -135,7 +135,7 @@ async function testTokenSend(token_to_ota_addr, token_to_ota, stamp, stampHoderK
     console.log("testTokenSend...");
     let cxtInterfaceCallData = TokenInstance.otatransfer.getData(token_to_ota_addr, token_to_ota, 888);
 
-    let otaSet = web3.wan.getOTAMixSet(stamp, 3);
+    let otaSet = web3.wan.getOTAMixSet(stamp, 8);
     console.log("fetch  ota stamp set: ",otaSet);
 
     let otaSetBuf = [];
@@ -239,7 +239,7 @@ async function buyStamp(myKey, stamp, value){
 
 async function main(){
     let myKey = parseKeystoreFile("./keys/myKey.json",keyPassword);
-    await deployContract("ERC20", myKey);
+    //await deployContract("ERC20", myKey);
     TokenAddress = fs.readFileSync("ERC20.addr","utf8");
     //TokenAddress = "0x7c0ec9698764435c3ab795f5debb64ab590bed7a";
 
