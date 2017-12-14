@@ -198,7 +198,6 @@ async function testTokenInit(myKey) {
     console.log("payload: " + rawTx.data.toString('hex'));
 
     var tx = new Tx(rawTx);
-    console.log("TX:", tx);
     tx.sign(myKey.privKeyA);
     var serializedTx = tx.serialize();
     let hash = web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'));
@@ -239,7 +238,7 @@ async function buyStamp(myKey, stamp, value){
 
 async function main(){
     let myKey = parseKeystoreFile("./keys/myKey.json",keyPassword);
-    //await deployContract("ERC20", myKey);
+    await deployContract("ERC20", myKey);
     TokenAddress = fs.readFileSync("ERC20.addr","utf8");
     //TokenAddress = "0x7c0ec9698764435c3ab795f5debb64ab590bed7a";
 

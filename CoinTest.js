@@ -71,7 +71,7 @@ async function preScTransfer(otaDestAddress, value){
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x10',
+        gasPrice: '0x10000',
         gasLimit: '0xf4241',
         to: contractInstanceAddress,//contract address
         value: value,
@@ -139,7 +139,7 @@ async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x10',
+        gasPrice: '0x10000',
         gasLimit: '0xf4240',
         to: contractInstanceAddress,//contract address
         value: '0x00',
