@@ -39,6 +39,11 @@ let myWaddr = keystore.waddress;
 let myAddr = '0x'+keystore.address;
 let PubKey = wanUtil.recoverPubkeyFromWaddress(myWaddr);
 let pubKeyA = PubKey.A;
+let gGasLimit='0x'+(600000).toString(16);
+let gGasPrice='0x'+(20000000000).toString(16);
+var amount = web3.toWei(0.01, 'ether');
+var bn = new web3.BigNumber(amount);
+var gValue = '0x' + bn.toString(16);
 
 
 function getTransactionReceipt(txHash)
@@ -71,8 +76,8 @@ async function preScTransfer(otaDestAddress, value){
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x10000',
-        gasLimit: '0xf4241',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: contractInstanceAddress,//contract address
         value: value,
         data: payload
@@ -139,8 +144,8 @@ async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x10000',
-        gasLimit: '0xf4240',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: contractInstanceAddress,//contract address
         value: '0x00',
         data: all

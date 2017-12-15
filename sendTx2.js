@@ -15,8 +15,8 @@ let coinSCDefinition = wanUtil.coinSCAbi;
 
 var config = require('./config');
 
-var web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.1.85:8545"));
 //var web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.1.85:8545"));
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 web3.wan = new wanUtil.web3Wan(web3);
 var contractInstanceAddress = config.contractInstanceAddress;

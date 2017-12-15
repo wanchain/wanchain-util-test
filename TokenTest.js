@@ -33,6 +33,11 @@ let TokenInstance = 0;
 let TokenAddress = 0x00;
 
 let keyPassword = "wanglu";
+let gGasLimit='0x'+(600000).toString(16);
+let gGasPrice='0x'+(20000000000).toString(16);
+var amount = web3.toWei(0.01, 'ether');
+var bn = new web3.BigNumber(amount);
+var gValue = '0x' + bn.toString(16);
 
 
 
@@ -86,8 +91,8 @@ async function deployContract(contractName, myKey) {
     var rawTx = {
         Txtype: '0x01',
         nonce: serial,
-        gasPrice: '0x30d40',
-        gasLimit: '0xf4240',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: '',
         value: '0x00',
         from: myKey.address,
@@ -162,8 +167,8 @@ async function testTokenSend(token_to_ota_addr, token_to_ota, stamp, stampHoderK
     var rawTx = {
         Txtype: '0x06',
         nonce: serial,
-        gasPrice: '0x30d40',
-        gasLimit: '0xf4240',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: TokenAddress,
         value: '0x00',
         data: combinedData
@@ -189,8 +194,8 @@ async function testTokenInit(myKey) {
     var rawTx = {
         Txtype: '0x00',
         nonce: serial,
-        gasPrice: '0x30d40',
-        gasLimit: '0xf4240',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: TokenAddress,
         value: '0x00',
         data: mintdata
@@ -215,8 +220,8 @@ async function buyStamp(myKey, stamp, value){
     var rawTx = {
         Txtype: '0x0',
         nonce: serial,
-        gasPrice: '0x30d40',
-        gasLimit: '0xf4240',
+        gasPrice: gGasPrice,
+        gasLimit: gGasLimit,
         to: config.contractStampAddress,
         value: value,
         data: payload
