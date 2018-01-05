@@ -26,7 +26,6 @@ var contractInstanceAddress = config.contractInstanceAddress;
 let contractCoinSC = web3.eth.contract(coinSCDefinition);
 let contractCoinInstance = contractCoinSC.at(contractInstanceAddress);
 
-
 let keyPassword = "wanglu";
 let keystoreStr = fs.readFileSync("./keys/myKey.json","utf8");
 let keystore = JSON.parse(keystoreStr);
@@ -39,11 +38,8 @@ let myWaddr = keystore.waddress;
 let myAddr = '0x'+keystore.address;
 let PubKey = wanUtil.recoverPubkeyFromWaddress(myWaddr);
 let pubKeyA = PubKey.A;
-let gGasLimit='0x'+(600000).toString(16);
-let gGasPrice='0x'+(20000000000).toString(16);
-var amount = web3.toWei(0.01, 'ether');
-var bn = new web3.BigNumber(amount);
-var gValue = '0x' + bn.toString(16);
+let gGasLimit=config.gGasLimit;
+let gGasPrice=config.gGasPrice;
 
 
 function getTransactionReceipt(txHash)
@@ -74,7 +70,7 @@ async function preScTransfer(otaDestAddress, value){
     let payload = contractCoinInstance.buyCoinNote.getData(otaDestAddress, value);
     var serial = '0x' + web3.eth.getTransactionCount(myAddr).toString(16);
     var rawTx = {
-        Txtype: '0x00',
+        Txtype: '0x01',
         nonce: serial,
         gasPrice: gGasPrice,
         gasLimit: gGasLimit,
@@ -142,7 +138,7 @@ async function otaRefund(otaSk, otaPubK, ringPubKs, value) {
 
     var serial = '0x' + web3.eth.getTransactionCount('0x'+keystore.address).toString(16);
     var rawTx = {
-        Txtype: '0x00',
+        Txtype: '0x01',
         nonce: serial,
         gasPrice: gGasPrice,
         gasLimit: gGasLimit,

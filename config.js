@@ -1,9 +1,7 @@
 const config = {};
 
 // web3 parameter
-//config.host = 'http://127.0.0.1'; // http://localhost
-//config.host = 'http://118.190.33.68'; // http://localhost
-config.host = 'http://192.168.1.85'; // http://localhost
+config.host = 'http://localhost'; // http://localhost
 config.port = 8545;
 
 // Instance Address
@@ -18,7 +16,7 @@ config.refundValue = 1000000000000000000;
 config.from_sk = 'a4369e77024c2ade4994a9345af5c47598c7cfb36c65e8a4a3117519883d9014';
 config.from_address = '0x2d0e7c0813a51d3bd1d08246af2a8a7a57d8922e';
 config.to_waddress = '0x0340721B2B6C7970A443B215951C7BAa4c41c35E2b591EA51016Eae523f5E123760354b82CccbEdC5c84F16D63414d44F595d85FD9e46C617E29e3AE2e82C5F7bDA9';
-config.transferValue = 20000000000000000000;
+config.transferValue = 10000000000000000000;
 
 
 // console color
@@ -35,5 +33,11 @@ config.consoleColor = {
 // 	TypeEight:3,
 // 	TypeSixteen:4
 // };
+
+
+config.gGasLimit='0x'+(1900000).toString(16);
+config.gGasPrice='0x'+(200000000000).toString(16);
+
+
 
 module.exports = config;
